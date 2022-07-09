@@ -43,7 +43,7 @@ class ShowTile extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
-                    child: PosterImage(poster: show.poster),
+                    child: PosterImage.medium(poster: show.poster),
                   ),
                 ),
                 Positioned(
