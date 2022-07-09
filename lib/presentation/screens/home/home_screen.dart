@@ -1,39 +1,25 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:jobsity_challenge/data/models/poster.dart';
-import 'package:jobsity_challenge/data/models/schedule.dart';
-import 'package:jobsity_challenge/data/models/show.dart';
+import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/home/widgets/show_tile.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
-
-const show = Show(
-  url:
-      'https://static.tvmaze.com/uploads/images/original_untouched/31/78286.jpg',
-  genres: ['Drama', 'Romance'],
-  summary:
-      'This Emmy winning series is a comic look at the assorted humiliations and rare triumphs of a group of girls in their 20s.',
-  poster: Poster(
-    mediumUrl:
-        'https://static.tvmaze.com/uploads/images/medium_portrait/31/78286.jpg',
-    originalUrl:
-        'https://static.tvmaze.com/uploads/images/original_untouched/31/78286.jpg',
-  ),
-  schedule: Schedule(time: '22:00', days: ['Sunday']),
-  name: 'Girls',
-  id: 139,
-);
+import 'package:jobsity_challenge/presentation/widgets/async_snapshot_response_view.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({
+    super.key,
+    required this.presenter,
+  });
 
+  final HomePresenter presenter;
   static const routeName = '/';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
+      body: NestedScrollView(
+        headerSliverBuilder: (context, _) => [
           SliverAppBar(
             stretch: true,
             expandedHeight: 144,
@@ -55,38 +41,44 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-            sliver: SliverGrid(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  return ShowTile(
-                    show: show,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const ShowDetails(show: show),
-                          settings: const RouteSettings(
-                            name: ShowDetails.routeName,
-                          ),
-                        ),
-                      );
-                    },
-                    onFavoriteToggle: () {},
-                    isFavorite: Random().nextBool(),
-                  );
-                },
-                childCount: 1,
-              ),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                mainAxisSpacing: 32,
-                crossAxisSpacing: 16,
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-              ),
-            ),
-          ),
         ],
+        body: StreamBuilder<HomeState>(
+            stream: presenter.onNewState,
+            builder: (context, snapshot) {
+              return AsyncSnapshotResponseView<Success, Loading, Error>(
+                snapshot: snapshot,
+                successWidgetBuilder: (context, data) => GridView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                  itemCount: data.showList.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    mainAxisSpacing: 32,
+                    crossAxisSpacing: 16,
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.75,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    final show = data.showList[index];
+
+                    return ShowTile(
+                      show: show,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ShowDetails(show: show),
+                            settings: const RouteSettings(
+                              name: ShowDetails.routeName,
+                            ),
+                          ),
+                        );
+                      },
+                      onFavoriteToggle: () {},
+                      isFavorite: Random().nextBool(),
+                    );
+                  },
+                ),
+              );
+            }),
       ),
     );
   }

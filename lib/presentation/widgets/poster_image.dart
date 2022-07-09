@@ -20,7 +20,7 @@ class PosterImage extends StatelessWidget {
       PosterImage._(
         key: key,
         hasBlur: hasBlur,
-        imageUrl: poster?.originalUrl ?? poster?.mediumUrl,
+        imageUrl: poster?.original ?? poster?.medium,
       );
 
   factory PosterImage.medium({
@@ -30,7 +30,7 @@ class PosterImage extends StatelessWidget {
   }) =>
       PosterImage._(
         key: key,
-        imageUrl: poster?.mediumUrl ?? poster?.originalUrl,
+        imageUrl: poster?.medium ?? poster?.original,
         isPortrait: isPortrait,
       );
 

@@ -1,4 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:jobsity_challenge/data/data_sources/remote_data_source.dart';
+import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_screen.dart';
 
 void main() {
@@ -12,8 +15,14 @@ class TVMaze extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomeScreen(),
+    return MaterialApp(
+      home: HomeScreen(
+        presenter: HomePresenter(
+          dataSource: ShowDataSourceImpl(
+            dio: Dio(),
+          ),
+        ),
+      ),
     );
   }
 }

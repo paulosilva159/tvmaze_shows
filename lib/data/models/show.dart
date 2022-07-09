@@ -1,22 +1,21 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:jobsity_challenge/data/models/poster.dart';
 import 'package:jobsity_challenge/data/models/schedule.dart';
 
-class Show {
-  const Show({
-    required this.id,
-    required this.url,
-    required this.name,
-    required this.genres,
-    required this.schedule,
-    required this.poster,
-    required this.summary,
-  });
+part 'show.freezed.dart';
+part 'show.g.dart';
 
-  final int id;
-  final String url;
-  final String name;
-  final List<String> genres;
-  final Schedule schedule;
-  final Poster poster;
-  final String summary;
+@freezed
+class Show with _$Show {
+  const factory Show({
+    required int id,
+    required String url,
+    required String name,
+    required List<String> genres,
+    required Schedule schedule,
+    required Poster image,
+    required String summary,
+  }) = _Show;
+
+  factory Show.fromJson(Map<String, Object?> json) => _$ShowFromJson(json);
 }

@@ -1,6 +1,15 @@
-class Schedule {
-  const Schedule({required this.time, required this.days});
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  final String time;
-  final List<String> days;
+part 'schedule.freezed.dart';
+part 'schedule.g.dart';
+
+@freezed
+class Schedule with _$Schedule {
+  const factory Schedule({
+    required String time,
+    required List<String> days,
+  }) = _Schedule;
+
+  factory Schedule.fromJson(Map<String, Object?> json) =>
+      _$ScheduleFromJson(json);
 }

@@ -12,19 +12,21 @@ import 'package:jobsity_challenge/presentation/widgets/poster_image.dart';
 
 const episodeList = <Episode>[
   Episode(
+    id: 1,
     name: 'Pilot',
     number: 1,
     season: 1,
     summary:
         "When the residents of Chester's Mill find themselves trapped under a massive transparent dome with no way out, they struggle to survive as resources rapidly dwindle and panic quickly escalates.",
     poster: Poster(
-      mediumUrl:
+      medium:
           'https://static.tvmaze.com/uploads/images/medium_landscape/1/4388.jpg',
-      originalUrl:
+      original:
           'https://static.tvmaze.com/uploads/images/original_untouched/1/4388.jpg',
     ),
   ),
   Episode(
+    id: 2,
     name: 'Pilot 2',
     number: 2,
     season: 1,
@@ -38,28 +40,30 @@ const episodeList = <Episode>[
     // ),
   ),
   Episode(
+    id: 3,
     name: 'Pilot 3',
     number: 3,
     season: 1,
     summary:
         "When the residents of Chester's Mill find themselves trapped under a massive transparent dome with no way out, they struggle to survive as resources rapidly dwindle and panic quickly escalates.",
     poster: Poster(
-      mediumUrl:
+      medium:
           'https://static.tvmaze.com/uploads/images/medium_landscape/1/4388.jpg',
-      originalUrl:
+      original:
           'https://static.tvmaze.com/uploads/images/original_untouched/1/4388.jpg',
     ),
   ),
   Episode(
+    id: 4,
     name: 'Heads Will Roll',
     number: 1,
     season: 2,
     summary:
         "Barbie's fate lies in Big Jim's hands, and the Dome presents a new threat when it becomes magnetized. Meanwhile, Julia seeks out the help of a stranger to save the life of a mysterious girl who may hold clues to origin of the Dome.",
     poster: Poster(
-      mediumUrl:
+      medium:
           'https://static.tvmaze.com/uploads/images/medium_landscape/4/10446.jpg',
-      originalUrl:
+      original:
           'https://static.tvmaze.com/uploads/images/original_untouched/4/10446.jpg',
     ),
   ),
@@ -91,7 +95,7 @@ class ShowDetails extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           PosterImage.original(
-            poster: show.poster,
+            poster: show.image,
             hasBlur: true,
           ),
           SingleChildScrollView(
@@ -109,7 +113,7 @@ class ShowDetails extends StatelessWidget {
                             child: Card(
                               elevation: 8,
                               shadowColor: Colors.pink,
-                              child: PosterImage.medium(poster: show.poster),
+                              child: PosterImage.medium(poster: show.image),
                             ),
                           ),
                           const SizedBox(width: 16),
