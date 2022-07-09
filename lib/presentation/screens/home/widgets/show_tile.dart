@@ -29,21 +29,24 @@ class ShowTile extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                        color: Colors.green.shade300,
-                      )
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: PosterImage.medium(poster: show.poster),
+                Hero(
+                  tag: show,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.pink,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 4,
+                          offset: const Offset(0, 4),
+                          color: Colors.pink.shade300,
+                        )
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: PosterImage.medium(poster: show.poster),
+                    ),
                   ),
                 ),
                 Positioned(

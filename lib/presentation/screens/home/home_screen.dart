@@ -5,6 +5,7 @@ import 'package:jobsity_challenge/data/models/poster.dart';
 import 'package:jobsity_challenge/data/models/schedule.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
 import 'package:jobsity_challenge/presentation/screens/home/widgets/show_tile.dart';
+import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
 
 const show = Show(
   url:
@@ -61,12 +62,21 @@ class HomeScreen extends StatelessWidget {
                 (context, index) {
                   return ShowTile(
                     show: show,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const ShowDetails(show: show),
+                          settings: const RouteSettings(
+                            name: ShowDetails.routeName,
+                          ),
+                        ),
+                      );
+                    },
                     onFavoriteToggle: () {},
                     isFavorite: Random().nextBool(),
                   );
                 },
-                childCount: 16,
+                childCount: 1,
               ),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 mainAxisSpacing: 32,
