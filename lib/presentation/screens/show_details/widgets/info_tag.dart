@@ -5,10 +5,12 @@ class InfoTag extends StatelessWidget {
     super.key,
     required this.title,
     required this.info,
+    this.maxLines,
   });
 
   final String title;
   final String info;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,11 @@ class InfoTag extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 2),
-            Text(info),
+            Text(
+              info,
+              maxLines: maxLines,
+              overflow: maxLines != null ? TextOverflow.ellipsis : null,
+            ),
           ],
         ),
       ),

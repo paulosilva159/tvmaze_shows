@@ -9,6 +9,7 @@ class PosterImage extends StatelessWidget {
     super.key,
     required this.imageUrl,
     this.hasBlur = false,
+    this.isPortrait = false,
   });
 
   factory PosterImage.original({
@@ -25,28 +26,31 @@ class PosterImage extends StatelessWidget {
   factory PosterImage.medium({
     Key? key,
     required Poster? poster,
+    bool isPortrait = false,
   }) =>
       PosterImage._(
         key: key,
         imageUrl: poster?.mediumUrl ?? poster?.originalUrl,
+        isPortrait: isPortrait,
       );
 
   final bool hasBlur;
   final String? imageUrl;
+  final bool isPortrait;
 
-  static const minWidth = 144.0;
-  static const minHeight = 192.0;
+  static const smallerSide = 144.0;
+  static const biggerSide = 192.0;
 
   @override
   Widget build(BuildContext context) {
-    final sigma = hasBlur ? 8.0 : 0.0;
+    final sigma = hasBlur ? 16.0 : 0.0;
     final blurOpacity = hasBlur ? 0.1 : 0.0;
 
     return imageUrl != null
         ? ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: minHeight,
-              minWidth: minWidth,
+            constraints: BoxConstraints(
+              minHeight: isPortrait ? smallerSide : biggerSide,
+              minWidth: isPortrait ? biggerSide : smallerSide,
             ),
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -70,9 +74,9 @@ class PosterImage extends StatelessWidget {
               ),
             ),
           )
-        : const Placeholder(
-            fallbackHeight: minHeight,
-            fallbackWidth: minWidth,
+        : Placeholder(
+            fallbackHeight: isPortrait ? smallerSide : biggerSide,
+            fallbackWidth: isPortrait ? biggerSide : smallerSide,
           );
   }
 }

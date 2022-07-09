@@ -18,6 +18,7 @@ class SeasonTile extends StatelessWidget {
       title: Text(title),
       backgroundColor: Colors.white,
       collapsedBackgroundColor: Colors.white54,
+      expandedAlignment: Alignment.centerLeft,
       children: [
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
