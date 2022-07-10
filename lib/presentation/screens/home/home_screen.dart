@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart';
+import 'package:jobsity_challenge/presentation/screens/home/home_states.dart';
+import 'package:jobsity_challenge/presentation/screens/home/widgets/page_change_button_row.dart';
 import 'package:jobsity_challenge/presentation/screens/home/widgets/show_tile.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
 import 'package:jobsity_challenge/presentation/widgets/async_snapshot_response_view.dart';
@@ -47,36 +49,79 @@ class HomeScreen extends StatelessWidget {
             builder: (context, snapshot) {
               return AsyncSnapshotResponseView<Success, Loading, Error>(
                 snapshot: snapshot,
-                successWidgetBuilder: (context, data) => GridView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-                  itemCount: data.showList.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisSpacing: 32,
-                    crossAxisSpacing: 16,
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.75,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    final show = data.showList[index];
-
-                    return ShowTile(
-                      show: show,
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => ShowDetails(show: show),
-                            settings: const RouteSettings(
-                              name: ShowDetails.routeName,
-                            ),
+                successWidgetBuilder: (context, data) {
+                  if (data.showList.isEmpty) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        const Expanded(
+                          child: Center(
+                            child: Text('Empty'),
                           ),
-                        );
-                      },
-                      onFavoriteToggle: () {},
-                      isFavorite: Random().nextBool(),
+                        ),
+                        PageChangeButtonRow(
+                          hasPreviousButton: data.previousPage != null,
+                          hasNextButton: false,
+                          onPreviousPressed: () =>
+                              presenter.onChangePage.add(data.previousPage!),
+                        ),
+                        const SizedBox(height: 64)
+                      ],
                     );
-                  },
-                ),
+                  }
+
+                  return CustomScrollView(
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 32,
+                        ),
+                        sliver: SliverGrid(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final show = data.showList[index];
+
+                              return ShowTile(
+                                show: show,
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => ShowDetails(show: show),
+                                      settings: const RouteSettings(
+                                        name: ShowDetails.routeName,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onFavoriteToggle: () {},
+                                isFavorite: Random().nextBool(),
+                              );
+                            },
+                            childCount: data.showList.length,
+                          ),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            mainAxisSpacing: 32,
+                            crossAxisSpacing: 16,
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.75,
+                          ),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: PageChangeButtonRow(
+                          hasPreviousButton: data.previousPage != null,
+                          hasNextButton: data.nextPage != null,
+                          onPreviousPressed: () =>
+                              presenter.onChangePage.add(data.previousPage!),
+                          onNextPressed: () =>
+                              presenter.onChangePage.add(data.nextPage!),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               );
             }),
       ),

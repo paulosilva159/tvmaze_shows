@@ -13,8 +13,8 @@ class Show with _$Show {
     required String name,
     required List<String> genres,
     required Schedule schedule,
-    required Poster image,
-    required String summary,
+    required String? summary,
+    Poster? image,
   }) = _Show;
 
   factory Show.fromJson(Map<String, Object?> json) => _$ShowFromJson(json);

@@ -25,8 +25,8 @@ mixin _$Show {
   String get name => throw _privateConstructorUsedError;
   List<String> get genres => throw _privateConstructorUsedError;
   Schedule get schedule => throw _privateConstructorUsedError;
-  Poster get image => throw _privateConstructorUsedError;
-  String get summary => throw _privateConstructorUsedError;
+  String? get summary => throw _privateConstructorUsedError;
+  Poster? get image => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -43,11 +43,11 @@ abstract class $ShowCopyWith<$Res> {
       String name,
       List<String> genres,
       Schedule schedule,
-      Poster image,
-      String summary});
+      String? summary,
+      Poster? image});
 
   $ScheduleCopyWith<$Res> get schedule;
-  $PosterCopyWith<$Res> get image;
+  $PosterCopyWith<$Res>? get image;
 }
 
 /// @nodoc
@@ -65,8 +65,8 @@ class _$ShowCopyWithImpl<$Res> implements $ShowCopyWith<$Res> {
     Object? name = freezed,
     Object? genres = freezed,
     Object? schedule = freezed,
-    Object? image = freezed,
     Object? summary = freezed,
+    Object? image = freezed,
   }) {
     return _then(_value.copyWith(
       id: id == freezed
@@ -89,14 +89,14 @@ class _$ShowCopyWithImpl<$Res> implements $ShowCopyWith<$Res> {
           ? _value.schedule
           : schedule // ignore: cast_nullable_to_non_nullable
               as Schedule,
-      image: image == freezed
-          ? _value.image
-          : image // ignore: cast_nullable_to_non_nullable
-              as Poster,
       summary: summary == freezed
           ? _value.summary
           : summary // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
+      image: image == freezed
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as Poster?,
     ));
   }
 
@@ -108,8 +108,12 @@ class _$ShowCopyWithImpl<$Res> implements $ShowCopyWith<$Res> {
   }
 
   @override
-  $PosterCopyWith<$Res> get image {
-    return $PosterCopyWith<$Res>(_value.image, (value) {
+  $PosterCopyWith<$Res>? get image {
+    if (_value.image == null) {
+      return null;
+    }
+
+    return $PosterCopyWith<$Res>(_value.image!, (value) {
       return _then(_value.copyWith(image: value));
     });
   }
@@ -126,13 +130,13 @@ abstract class _$$_ShowCopyWith<$Res> implements $ShowCopyWith<$Res> {
       String name,
       List<String> genres,
       Schedule schedule,
-      Poster image,
-      String summary});
+      String? summary,
+      Poster? image});
 
   @override
   $ScheduleCopyWith<$Res> get schedule;
   @override
-  $PosterCopyWith<$Res> get image;
+  $PosterCopyWith<$Res>? get image;
 }
 
 /// @nodoc
@@ -151,8 +155,8 @@ class __$$_ShowCopyWithImpl<$Res> extends _$ShowCopyWithImpl<$Res>
     Object? name = freezed,
     Object? genres = freezed,
     Object? schedule = freezed,
-    Object? image = freezed,
     Object? summary = freezed,
+    Object? image = freezed,
   }) {
     return _then(_$_Show(
       id: id == freezed
@@ -175,14 +179,14 @@ class __$$_ShowCopyWithImpl<$Res> extends _$ShowCopyWithImpl<$Res>
           ? _value.schedule
           : schedule // ignore: cast_nullable_to_non_nullable
               as Schedule,
-      image: image == freezed
-          ? _value.image
-          : image // ignore: cast_nullable_to_non_nullable
-              as Poster,
       summary: summary == freezed
           ? _value.summary
           : summary // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
+      image: image == freezed
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as Poster?,
     ));
   }
 }
@@ -196,8 +200,8 @@ class _$_Show implements _Show {
       required this.name,
       required final List<String> genres,
       required this.schedule,
-      required this.image,
-      required this.summary})
+      required this.summary,
+      this.image})
       : _genres = genres;
 
   factory _$_Show.fromJson(Map<String, dynamic> json) => _$$_ShowFromJson(json);
@@ -218,13 +222,13 @@ class _$_Show implements _Show {
   @override
   final Schedule schedule;
   @override
-  final Poster image;
+  final String? summary;
   @override
-  final String summary;
+  final Poster? image;
 
   @override
   String toString() {
-    return 'Show(id: $id, url: $url, name: $name, genres: $genres, schedule: $schedule, image: $image, summary: $summary)';
+    return 'Show(id: $id, url: $url, name: $name, genres: $genres, schedule: $schedule, summary: $summary, image: $image)';
   }
 
   @override
@@ -237,8 +241,8 @@ class _$_Show implements _Show {
             const DeepCollectionEquality().equals(other.name, name) &&
             const DeepCollectionEquality().equals(other._genres, _genres) &&
             const DeepCollectionEquality().equals(other.schedule, schedule) &&
-            const DeepCollectionEquality().equals(other.image, image) &&
-            const DeepCollectionEquality().equals(other.summary, summary));
+            const DeepCollectionEquality().equals(other.summary, summary) &&
+            const DeepCollectionEquality().equals(other.image, image));
   }
 
   @JsonKey(ignore: true)
@@ -250,8 +254,8 @@ class _$_Show implements _Show {
       const DeepCollectionEquality().hash(name),
       const DeepCollectionEquality().hash(_genres),
       const DeepCollectionEquality().hash(schedule),
-      const DeepCollectionEquality().hash(image),
-      const DeepCollectionEquality().hash(summary));
+      const DeepCollectionEquality().hash(summary),
+      const DeepCollectionEquality().hash(image));
 
   @JsonKey(ignore: true)
   @override
@@ -271,8 +275,8 @@ abstract class _Show implements Show {
       required final String name,
       required final List<String> genres,
       required final Schedule schedule,
-      required final Poster image,
-      required final String summary}) = _$_Show;
+      required final String? summary,
+      final Poster? image}) = _$_Show;
 
   factory _Show.fromJson(Map<String, dynamic> json) = _$_Show.fromJson;
 
@@ -287,9 +291,9 @@ abstract class _Show implements Show {
   @override
   Schedule get schedule;
   @override
-  Poster get image;
+  String? get summary;
   @override
-  String get summary;
+  Poster? get image;
   @override
   @JsonKey(ignore: true)
   _$$_ShowCopyWith<_$_Show> get copyWith => throw _privateConstructorUsedError;

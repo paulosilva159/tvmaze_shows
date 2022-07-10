@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/data/infrastructure/url_builder.dart';
 import 'package:jobsity_challenge/data/models/episode.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
@@ -22,28 +21,33 @@ class ShowDataSourceImpl implements ShowDataSource {
 
   @override
   Future<PaginatedResponse> fetchShowList(int page) async {
-    final response = await dio.get(
-      UrlBuilder.showList(page),
-    );
+    final previousPage = page != 0 ? page - 1 : null;
 
-    if (response.statusCode == 404) {
-      return PaginatedResponse(
-        showList: <Show>[],
-        previousPage: page,
-        nextPage: null,
+    try {
+      final response = await dio.get(
+        UrlBuilder.showList(page),
       );
-    } else if (response.statusCode == 200) {
-      debugPrint(response.data.toString());
+
       return PaginatedResponse(
         showList: response.data.map<Show>((json) {
           return Show.fromJson(json);
         }).toList(),
-        previousPage: page,
+        previousPage: previousPage,
         nextPage: page + 1,
       );
-    } else {
-      // TODO(paulosilva): Implement custom exception
-      throw Exception();
+    } catch (error) {
+      final isPaginationEnd =
+          error is DioError && error.response?.statusCode == 404;
+
+      if (isPaginationEnd) {
+        return PaginatedResponse(
+          showList: <Show>[],
+          previousPage: previousPage,
+          nextPage: null,
+        );
+      } else {
+        rethrow;
+      }
     }
   }
 }
@@ -51,8 +55,8 @@ class ShowDataSourceImpl implements ShowDataSource {
 class PaginatedResponse {
   const PaginatedResponse({
     required this.showList,
-    this.previousPage,
-    this.nextPage,
+    required this.previousPage,
+    required this.nextPage,
   });
 
   final int? nextPage;

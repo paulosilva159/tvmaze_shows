@@ -13,8 +13,10 @@ _$_Show _$$_ShowFromJson(Map<String, dynamic> json) => _$_Show(
       genres:
           (json['genres'] as List<dynamic>).map((e) => e as String).toList(),
       schedule: Schedule.fromJson(json['schedule'] as Map<String, dynamic>),
-      image: Poster.fromJson(json['image'] as Map<String, dynamic>),
-      summary: json['summary'] as String,
+      summary: json['summary'] as String?,
+      image: json['image'] == null
+          ? null
+          : Poster.fromJson(json['image'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$_ShowToJson(_$_Show instance) => <String, dynamic>{
@@ -23,6 +25,6 @@ Map<String, dynamic> _$$_ShowToJson(_$_Show instance) => <String, dynamic>{
       'name': instance.name,
       'genres': instance.genres,
       'schedule': instance.schedule,
-      'image': instance.image,
       'summary': instance.summary,
+      'image': instance.image,
     };

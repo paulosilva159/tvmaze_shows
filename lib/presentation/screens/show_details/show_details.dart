@@ -137,7 +137,8 @@ class ShowDetails extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 32),
-                      SummaryTag(title: 'Summary', info: show.summary),
+                      if (show.summary != null)
+                        SummaryTag(title: 'Summary', info: show.summary!),
                     ],
                   ),
                 ),
