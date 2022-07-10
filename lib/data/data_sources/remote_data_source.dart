@@ -7,6 +7,7 @@ abstract class ShowDataSource {
   Future<PaginatedResponse> fetchShowList(int page);
   Future<List<Episode>> fetchEpisodeListByShow(int showId);
   Future<List<Show>> searchShowByName(String query);
+  Future<List<Show>> fetchShowListById(List<int> showIdList);
 }
 
 class ShowDataSourceImpl implements ShowDataSource {
@@ -66,6 +67,20 @@ class ShowDataSourceImpl implements ShowDataSource {
     return response.data.map<Show>((json) {
       return Show.fromJson(json['show']);
     }).toList();
+  }
+
+  @override
+  Future<List<Show>> fetchShowListById(List<int> showIdList) async {
+    final showList = <Show>[];
+
+    for (final id in showIdList) {
+      final response = await dio.get(UrlBuilder.showListById(id));
+      final show = Show.fromJson(response.data);
+
+      showList.add(show);
+    }
+
+    return showList;
   }
 }
 

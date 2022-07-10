@@ -4,6 +4,8 @@ import 'package:jobsity_challenge/data/data_sources/local_data_source.dart';
 import 'package:jobsity_challenge/data/data_sources/remote_data_source.dart';
 import 'package:jobsity_challenge/data/infrastructure/url_builder.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
+import 'package:jobsity_challenge/presentation/screens/favorites/favorites_presenter.dart';
+import 'package:jobsity_challenge/presentation/screens/favorites/favorites_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
@@ -96,6 +98,29 @@ class _GlobalProviderState extends State<GlobalProvider> {
                       builder: (_, presenter, __) {
                         return ShowDetailsScreen(
                           show: show,
+                          presenter: presenter,
+                        );
+                      },
+                    ),
+                  );
+                },
+              );
+            } else if (routeName == FavoritesScreen.routeName) {
+              return MaterialPageRoute(
+                builder: (_) {
+                  return ProxyProvider2<ShowDataSource, FavoriteDataSource,
+                      FavoritesScreenPresenter>(
+                    update: (_, showDataSource, favoriteDataSource, __) {
+                      return FavoritesScreenPresenter(
+                        showDataSource: showDataSource,
+                        favoriteDataSource: favoriteDataSource,
+                        favoriteChangeStream: _favoriteChangeSubject.stream,
+                      );
+                    },
+                    dispose: (_, presenter) => presenter.dispose(),
+                    child: Consumer<FavoritesScreenPresenter>(
+                      builder: (_, presenter, __) {
+                        return FavoritesScreen(
                           presenter: presenter,
                         );
                       },
