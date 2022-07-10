@@ -1,12 +1,13 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:jobsity_challenge/data/data_sources/remote_data_source.dart';
-import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart';
+import 'package:jobsity_challenge/global_provider.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    const TVMaze(),
+    GlobalProvider(
+      builder: (_) => const TVMaze(),
+    ),
   );
 }
 
@@ -16,13 +17,8 @@ class TVMaze extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomeScreen(
-        presenter: HomePresenter(
-          dataSource: ShowDataSourceImpl(
-            dio: Dio(),
-          ),
-        ),
-      ),
+      initialRoute: HomeScreen.routeName,
+      onGenerateRoute: Provider.of<RouteFactory>(context, listen: false),
     );
   }
 }

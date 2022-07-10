@@ -85,13 +85,9 @@ class HomeScreen extends StatelessWidget {
                               return ShowTile(
                                 show: show,
                                 onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => ShowDetails(show: show),
-                                      settings: const RouteSettings(
-                                        name: ShowDetails.routeName,
-                                      ),
-                                    ),
+                                  Navigator.of(context).pushNamed(
+                                    ShowDetailsScreen.routeName,
+                                    arguments: show,
                                   );
                                 },
                                 onFavoriteToggle: () {},

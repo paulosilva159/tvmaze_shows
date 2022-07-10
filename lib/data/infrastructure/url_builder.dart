@@ -1,6 +1,6 @@
 class UrlBuilder {
-  static const _baseUrl = 'https://api.tvmaze.com';
-  static String showList(int page) => '$_baseUrl/show?page=$page';
+  static const baseUrl = 'https://api.tvmaze.com';
+  static String showList(int page) => '/show?page=$page';
   static String episodesList(int showId) =>
-      '$_baseUrl/shows/$showId/episodes?specials=1';
+      '/shows/$showId/episodes?specials=1';
 }

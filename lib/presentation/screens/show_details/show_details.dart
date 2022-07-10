@@ -69,8 +69,8 @@ const episodeList = <Episode>[
   ),
 ];
 
-class ShowDetails extends StatelessWidget {
-  const ShowDetails({
+class ShowDetailsScreen extends StatelessWidget {
+  const ShowDetailsScreen({
     super.key,
     required this.show,
   });
