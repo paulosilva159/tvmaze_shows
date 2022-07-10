@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/global_provider.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final storage = await SharedPreferences.getInstance();
+
   runApp(
     GlobalProvider(
+      storage: storage,
       builder: (_) => const TVMaze(),
     ),
   );

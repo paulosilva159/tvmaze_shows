@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:jobsity_challenge/data/data_sources/local_data_source.dart';
 import 'package:jobsity_challenge/data/data_sources/remote_data_source.dart';
 import 'package:jobsity_challenge/data/infrastructure/url_builder.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
@@ -9,17 +10,36 @@ import 'package:jobsity_challenge/presentation/screens/show_details/show_details
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details_presenter.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GlobalProvider extends StatefulWidget {
-  const GlobalProvider({super.key, required this.builder});
+  const GlobalProvider({
+    super.key,
+    required this.builder,
+    required this.storage,
+  });
 
   final WidgetBuilder builder;
+  final SharedPreferences storage;
 
   @override
   State<GlobalProvider> createState() => _GlobalProviderState();
 }
 
 class _GlobalProviderState extends State<GlobalProvider> {
+  final _favoriteChangeSubject = PublishSubject<void>();
+
+  List<SingleChildWidget> _localProviders(SharedPreferences storage) => [
+        Provider<SharedPreferences>(create: (_) => storage),
+        ProxyProvider<SharedPreferences, FavoriteDataSource>(
+          update: (_, storage, __) => FavoriteDataSourceImpl(
+            storage: storage,
+            favoriteChangeSink: _favoriteChangeSubject.sink,
+          ),
+        ),
+      ];
+
   final List<SingleChildWidget> _remoteProviders = [
     Provider<Dio>(
       create: (_) => Dio(
@@ -31,62 +51,78 @@ class _GlobalProviderState extends State<GlobalProvider> {
     ),
   ];
 
-  final SingleChildWidget _routeProvider = Provider<RouteFactory>(
-    create: (_) {
-      return (settings) {
-        final routeName = settings.name;
+  SingleChildWidget _routeProvider() => Provider<RouteFactory>(
+        create: (_) {
+          return (settings) {
+            final routeName = settings.name;
 
-        if (routeName == HomeScreen.routeName) {
-          return MaterialPageRoute(builder: (_) {
-            return ProxyProvider<ShowDataSource, HomePresenter>(
-              update: (_, dataSource, presenter) {
-                return presenter ?? HomePresenter(dataSource: dataSource);
-              },
-              dispose: (_, presenter) => presenter.dispose(),
-              child: Consumer<HomePresenter>(
-                builder: (_, presenter, __) {
-                  return HomeScreen(presenter: presenter);
-                },
-              ),
-            );
-          });
-        } else if (routeName == ShowDetailsScreen.routeName) {
-          final show = settings.arguments as Show;
+            if (routeName == HomeScreen.routeName) {
+              return MaterialPageRoute(builder: (_) {
+                return ProxyProvider2<ShowDataSource, FavoriteDataSource,
+                    HomePresenter>(
+                  update: (_, showDataSource, favoriteDataSource, presenter) {
+                    return presenter ??
+                        HomePresenter(
+                          showDataSource: showDataSource,
+                          favoriteDataSource: favoriteDataSource,
+                          favoriteChangeStream: _favoriteChangeSubject.stream,
+                        );
+                  },
+                  dispose: (_, presenter) => presenter.dispose(),
+                  child: Consumer<HomePresenter>(
+                    builder: (_, presenter, __) {
+                      return HomeScreen(presenter: presenter);
+                    },
+                  ),
+                );
+              });
+            } else if (routeName == ShowDetailsScreen.routeName) {
+              final show = settings.arguments as Show;
 
-          return MaterialPageRoute(
-            builder: (_) {
-              return ProxyProvider<ShowDataSource, ShowDetailsPresenter>(
-                update: (_, dataSource, __) {
-                  return ShowDetailsPresenter(
-                    showId: show.id,
-                    dataSource: dataSource,
+              return MaterialPageRoute(
+                builder: (_) {
+                  return ProxyProvider2<ShowDataSource, FavoriteDataSource,
+                      ShowDetailsPresenter>(
+                    update: (_, showDataSource, favoriteDataSource, __) {
+                      return ShowDetailsPresenter(
+                        showId: show.id,
+                        showDataSource: showDataSource,
+                        favoriteDataSource: favoriteDataSource,
+                        favoriteChangeStream: _favoriteChangeSubject.stream,
+                      );
+                    },
+                    dispose: (_, presenter) => presenter.dispose(),
+                    child: Consumer<ShowDetailsPresenter>(
+                      builder: (_, presenter, __) {
+                        return ShowDetailsScreen(
+                          show: show,
+                          presenter: presenter,
+                        );
+                      },
+                    ),
                   );
                 },
-                dispose: (_, presenter) => presenter.dispose(),
-                child: Consumer<ShowDetailsPresenter>(
-                  builder: (_, presenter, __) {
-                    return ShowDetailsScreen(
-                      show: show,
-                      presenter: presenter,
-                    );
-                  },
-                ),
               );
-            },
-          );
-        }
+            }
 
-        return null;
-      };
-    },
-  );
+            return null;
+          };
+        },
+      );
+
+  @override
+  void dispose() {
+    _favoriteChangeSubject.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ..._remoteProviders,
-        _routeProvider,
+        ..._localProviders(widget.storage),
+        _routeProvider(),
       ],
       child: widget.builder(context),
     );

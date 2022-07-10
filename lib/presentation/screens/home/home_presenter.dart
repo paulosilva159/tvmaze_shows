@@ -1,12 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:jobsity_challenge/commons/subscription_holder.dart';
+import 'package:jobsity_challenge/data/data_sources/local_data_source.dart';
 import 'package:jobsity_challenge/data/data_sources/remote_data_source.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_states.dart';
 import 'package:rxdart/rxdart.dart';
 
 class HomePresenter with SubscriptionHolder {
   HomePresenter({
-    required this.dataSource,
+    required this.showDataSource,
+    required this.favoriteDataSource,
+    required Stream<void> favoriteChangeStream,
   }) {
     Rx.merge([
       Rx.merge([
@@ -19,11 +22,17 @@ class HomePresenter with SubscriptionHolder {
         } else {
           return _searchShowByName(query);
         }
-      })
+      }),
+      favoriteChangeStream.flatMap((_) => _onFavoriteChange())
     ]).listen(_stateSubject.sink.add).addTo(subscriptions);
+
+    _toggleShowFavoriteStateSubject.stream.listen((showId) async {
+      await _toggleFavoriteState(showId);
+    }).addTo(subscriptions);
   }
 
-  final ShowDataSource dataSource;
+  final ShowDataSource showDataSource;
+  final FavoriteDataSource favoriteDataSource;
 
   final _stateSubject = BehaviorSubject<HomeState>();
   Stream<HomeState> get onNewState => _stateSubject.stream;
@@ -34,13 +43,47 @@ class HomePresenter with SubscriptionHolder {
   final _searchQuerySubject = PublishSubject<String?>();
   Sink<String?> get onSearch => _searchQuerySubject.sink;
 
+  final _toggleShowFavoriteStateSubject = PublishSubject<int>();
+  Sink<int> get onToggleFavorite => _toggleShowFavoriteStateSubject.sink;
+
+  Stream<HomeState> _onFavoriteChange() async* {
+    final state = _stateSubject.value;
+
+    if (state is Success) {
+      final newFavoriteList = favoriteDataSource.getFavoriteList();
+
+      yield Success(
+        favoriteShowList: newFavoriteList,
+        previousPage: state.previousPage,
+        nextPage: state.nextPage,
+        showList: state.showList,
+      );
+    }
+  }
+
+  Future<void> _toggleFavoriteState(int showId) async {
+    final state = _stateSubject.value;
+
+    if (state is Success) {
+      final favoriteList = state.favoriteShowList;
+
+      if (favoriteList.contains(showId)) {
+        await favoriteDataSource.unfavoriteShow(showId);
+      } else {
+        await favoriteDataSource.favoriteShow(showId);
+      }
+    }
+  }
+
   Stream<HomeState> _fetchShowList(int page) async* {
     yield Loading();
 
     try {
-      final paginatedResponse = await dataSource.fetchShowList(page);
+      final paginatedResponse = await showDataSource.fetchShowList(page);
+      final favoriteShowList = favoriteDataSource.getFavoriteList();
 
       yield Success(
+        favoriteShowList: favoriteShowList,
         showList: paginatedResponse.showList,
         previousPage: paginatedResponse.previousPage,
         nextPage: paginatedResponse.nextPage,
@@ -54,9 +97,11 @@ class HomePresenter with SubscriptionHolder {
     yield Loading();
 
     try {
-      final showList = await dataSource.searchShowByName(query);
+      final showList = await showDataSource.searchShowByName(query);
+      final favoriteShowList = favoriteDataSource.getFavoriteList();
 
       yield Success(
+        favoriteShowList: favoriteShowList,
         previousPage: null,
         nextPage: null,
         showList: showList,
@@ -71,6 +116,7 @@ class HomePresenter with SubscriptionHolder {
     _stateSubject.close();
     _changePageSubject.close();
     _searchQuerySubject.close();
+    _toggleShowFavoriteStateSubject.close();
     disposeAll();
   }
 }

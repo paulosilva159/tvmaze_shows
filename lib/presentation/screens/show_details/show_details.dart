@@ -29,9 +29,16 @@ class ShowDetailsScreen extends StatelessWidget {
         title: Text(show.name),
         centerTitle: true,
         actions: [
-          FavoriteIconButton(
-            onToggle: () {},
-          )
+          StreamBuilder<bool>(
+              stream: presenter.onFavoriteState,
+              builder: (context, snapshot) {
+                final data = snapshot.data;
+
+                return FavoriteIconButton(
+                  isFavorite: data ?? false,
+                  onToggle: () => presenter.onToggleFavorite.add(null),
+                );
+              })
         ],
       ),
       body: Stack(

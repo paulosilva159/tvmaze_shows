@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_states.dart';
@@ -125,8 +123,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     arguments: show,
                                   );
                                 },
-                                onFavoriteToggle: () {},
-                                isFavorite: Random().nextBool(),
+                                onFavoriteToggle: () => widget
+                                    .presenter.onToggleFavorite
+                                    .add(show.id),
+                                isFavorite:
+                                    data.favoriteShowList.contains(show.id),
                               );
                             },
                             childCount: data.showList.length,
