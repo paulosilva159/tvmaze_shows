@@ -9,14 +9,18 @@ class HomePresenter with SubscriptionHolder {
     required this.dataSource,
   }) {
     Rx.merge([
-      Stream<int?>.value(null),
-      _changePageSubject.stream,
-    ])
-        .flatMap((page) {
-          return _fetchShowList(page ?? 0);
-        })
-        .listen(_stateSubject.sink.add)
-        .addTo(subscriptions);
+      Rx.merge([
+        Stream<int>.value(0),
+        _changePageSubject.stream,
+      ]).flatMap((page) => _fetchShowList(page)),
+      _searchQuerySubject.stream.flatMap((query) {
+        if (query == null || query.isEmpty) {
+          return _fetchShowList(0);
+        } else {
+          return _searchShowByName(query);
+        }
+      })
+    ]).listen(_stateSubject.sink.add).addTo(subscriptions);
   }
 
   final ShowDataSource dataSource;
@@ -27,6 +31,9 @@ class HomePresenter with SubscriptionHolder {
   final _changePageSubject = PublishSubject<int>();
   Sink<int> get onChangePage => _changePageSubject.sink;
 
+  final _searchQuerySubject = PublishSubject<String?>();
+  Sink<String?> get onSearch => _searchQuerySubject.sink;
+
   Stream<HomeState> _fetchShowList(int page) async* {
     yield Loading();
 
@@ -36,7 +43,23 @@ class HomePresenter with SubscriptionHolder {
       yield Success(
         showList: paginatedResponse.showList,
         previousPage: paginatedResponse.previousPage,
-        nextPage: (paginatedResponse.nextPage ?? 0) * 2,
+        nextPage: paginatedResponse.nextPage,
+      );
+    } catch (_) {
+      yield Error();
+    }
+  }
+
+  Stream<HomeState> _searchShowByName(String query) async* {
+    yield Loading();
+
+    try {
+      final showList = await dataSource.searchShowByName(query);
+
+      yield Success(
+        previousPage: null,
+        nextPage: null,
+        showList: showList,
       );
     } catch (error) {
       debugPrint(error.toString());
@@ -47,6 +70,7 @@ class HomePresenter with SubscriptionHolder {
   void dispose() {
     _stateSubject.close();
     _changePageSubject.close();
+    _searchQuerySubject.close();
     disposeAll();
   }
 }

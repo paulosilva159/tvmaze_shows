@@ -6,6 +6,7 @@ import 'package:jobsity_challenge/data/models/show.dart';
 abstract class ShowDataSource {
   Future<PaginatedResponse> fetchShowList(int page);
   Future<List<Episode>> fetchEpisodeListByShow(int showId);
+  Future<List<Show>> searchShowByName(String query);
 }
 
 class ShowDataSourceImpl implements ShowDataSource {
@@ -54,6 +55,17 @@ class ShowDataSourceImpl implements ShowDataSource {
         rethrow;
       }
     }
+  }
+
+  @override
+  Future<List<Show>> searchShowByName(String query) async {
+    final response = await dio.get(
+      UrlBuilder.showSearch(query),
+    );
+
+    return response.data.map<Show>((json) {
+      return Show.fromJson(json['show']);
+    }).toList();
   }
 }
 

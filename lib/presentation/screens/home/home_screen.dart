@@ -8,7 +8,7 @@ import 'package:jobsity_challenge/presentation/screens/home/widgets/show_tile.da
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
 import 'package:jobsity_challenge/presentation/widgets/async_snapshot_response_view.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
     required this.presenter,
@@ -18,34 +18,68 @@ class HomeScreen extends StatelessWidget {
   static const routeName = '/';
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final queryTextEditingController = TextEditingController();
+
+  @override
+  void dispose() {
+    queryTextEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, _) => [
           SliverAppBar(
             stretch: true,
-            expandedHeight: 144,
+            expandedHeight: 120,
             title: const Text('Jobsity Movies'),
             bottom: PreferredSize(
               preferredSize: const Size(double.infinity, 56),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    filled: true,
-                    isDense: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: TextField(
+                        textAlignVertical: TextAlignVertical.center,
+                        controller: queryTextEditingController,
+                        textInputAction: TextInputAction.search,
+                        onSubmitted: (value) =>
+                            widget.presenter.onSearch.add(value),
+                        decoration: InputDecoration(
+                          filled: true,
+                          isDense: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    IconButton(
+                      onPressed: () {
+                        queryTextEditingController.clear();
+                        widget.presenter.onSearch.add(null);
+                      },
+                      icon: const Icon(
+                        Icons.clear,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
         ],
         body: StreamBuilder<HomeState>(
-            stream: presenter.onNewState,
+            stream: widget.presenter.onNewState,
             builder: (context, snapshot) {
               return AsyncSnapshotResponseView<Success, Loading, Error>(
                 snapshot: snapshot,
@@ -54,16 +88,17 @@ class HomeScreen extends StatelessWidget {
                     return Column(
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Center(
-                            child: Text('Empty'),
+                            child: Text(
+                                'Your search for "${queryTextEditingController.text}" returned nothing :('),
                           ),
                         ),
                         PageChangeButtonRow(
                           hasPreviousButton: data.previousPage != null,
                           hasNextButton: false,
-                          onPreviousPressed: () =>
-                              presenter.onChangePage.add(data.previousPage!),
+                          onPreviousPressed: () => widget.presenter.onChangePage
+                              .add(data.previousPage!),
                         ),
                         const SizedBox(height: 64)
                       ],
@@ -109,10 +144,10 @@ class HomeScreen extends StatelessWidget {
                         child: PageChangeButtonRow(
                           hasPreviousButton: data.previousPage != null,
                           hasNextButton: data.nextPage != null,
-                          onPreviousPressed: () =>
-                              presenter.onChangePage.add(data.previousPage!),
+                          onPreviousPressed: () => widget.presenter.onChangePage
+                              .add(data.previousPage!),
                           onNextPressed: () =>
-                              presenter.onChangePage.add(data.nextPage!),
+                              widget.presenter.onChangePage.add(data.nextPage!),
                         ),
                       ),
                     ],
