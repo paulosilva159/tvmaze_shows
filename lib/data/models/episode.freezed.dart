@@ -22,10 +22,10 @@ Episode _$EpisodeFromJson(Map<String, dynamic> json) {
 mixin _$Episode {
   int get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  int get number => throw _privateConstructorUsedError;
   int get season => throw _privateConstructorUsedError;
-  String get summary => throw _privateConstructorUsedError;
-  Poster? get poster => throw _privateConstructorUsedError;
+  int? get number => throw _privateConstructorUsedError;
+  String? get summary => throw _privateConstructorUsedError;
+  Poster? get image => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -39,12 +39,12 @@ abstract class $EpisodeCopyWith<$Res> {
   $Res call(
       {int id,
       String name,
-      int number,
       int season,
-      String summary,
-      Poster? poster});
+      int? number,
+      String? summary,
+      Poster? image});
 
-  $PosterCopyWith<$Res>? get poster;
+  $PosterCopyWith<$Res>? get image;
 }
 
 /// @nodoc
@@ -59,10 +59,10 @@ class _$EpisodeCopyWithImpl<$Res> implements $EpisodeCopyWith<$Res> {
   $Res call({
     Object? id = freezed,
     Object? name = freezed,
-    Object? number = freezed,
     Object? season = freezed,
+    Object? number = freezed,
     Object? summary = freezed,
-    Object? poster = freezed,
+    Object? image = freezed,
   }) {
     return _then(_value.copyWith(
       id: id == freezed
@@ -73,33 +73,33 @@ class _$EpisodeCopyWithImpl<$Res> implements $EpisodeCopyWith<$Res> {
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      number: number == freezed
-          ? _value.number
-          : number // ignore: cast_nullable_to_non_nullable
-              as int,
       season: season == freezed
           ? _value.season
           : season // ignore: cast_nullable_to_non_nullable
               as int,
+      number: number == freezed
+          ? _value.number
+          : number // ignore: cast_nullable_to_non_nullable
+              as int?,
       summary: summary == freezed
           ? _value.summary
           : summary // ignore: cast_nullable_to_non_nullable
-              as String,
-      poster: poster == freezed
-          ? _value.poster
-          : poster // ignore: cast_nullable_to_non_nullable
+              as String?,
+      image: image == freezed
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
               as Poster?,
     ));
   }
 
   @override
-  $PosterCopyWith<$Res>? get poster {
-    if (_value.poster == null) {
+  $PosterCopyWith<$Res>? get image {
+    if (_value.image == null) {
       return null;
     }
 
-    return $PosterCopyWith<$Res>(_value.poster!, (value) {
-      return _then(_value.copyWith(poster: value));
+    return $PosterCopyWith<$Res>(_value.image!, (value) {
+      return _then(_value.copyWith(image: value));
     });
   }
 }
@@ -113,13 +113,13 @@ abstract class _$$_EpisodeCopyWith<$Res> implements $EpisodeCopyWith<$Res> {
   $Res call(
       {int id,
       String name,
-      int number,
       int season,
-      String summary,
-      Poster? poster});
+      int? number,
+      String? summary,
+      Poster? image});
 
   @override
-  $PosterCopyWith<$Res>? get poster;
+  $PosterCopyWith<$Res>? get image;
 }
 
 /// @nodoc
@@ -135,10 +135,10 @@ class __$$_EpisodeCopyWithImpl<$Res> extends _$EpisodeCopyWithImpl<$Res>
   $Res call({
     Object? id = freezed,
     Object? name = freezed,
-    Object? number = freezed,
     Object? season = freezed,
+    Object? number = freezed,
     Object? summary = freezed,
-    Object? poster = freezed,
+    Object? image = freezed,
   }) {
     return _then(_$_Episode(
       id: id == freezed
@@ -149,21 +149,21 @@ class __$$_EpisodeCopyWithImpl<$Res> extends _$EpisodeCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      number: number == freezed
-          ? _value.number
-          : number // ignore: cast_nullable_to_non_nullable
-              as int,
       season: season == freezed
           ? _value.season
           : season // ignore: cast_nullable_to_non_nullable
               as int,
+      number: number == freezed
+          ? _value.number
+          : number // ignore: cast_nullable_to_non_nullable
+              as int?,
       summary: summary == freezed
           ? _value.summary
           : summary // ignore: cast_nullable_to_non_nullable
-              as String,
-      poster: poster == freezed
-          ? _value.poster
-          : poster // ignore: cast_nullable_to_non_nullable
+              as String?,
+      image: image == freezed
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
               as Poster?,
     ));
   }
@@ -175,10 +175,10 @@ class _$_Episode implements _Episode {
   const _$_Episode(
       {required this.id,
       required this.name,
-      required this.number,
       required this.season,
-      required this.summary,
-      this.poster});
+      this.number,
+      this.summary,
+      this.image});
 
   factory _$_Episode.fromJson(Map<String, dynamic> json) =>
       _$$_EpisodeFromJson(json);
@@ -188,17 +188,17 @@ class _$_Episode implements _Episode {
   @override
   final String name;
   @override
-  final int number;
-  @override
   final int season;
   @override
-  final String summary;
+  final int? number;
   @override
-  final Poster? poster;
+  final String? summary;
+  @override
+  final Poster? image;
 
   @override
   String toString() {
-    return 'Episode(id: $id, name: $name, number: $number, season: $season, summary: $summary, poster: $poster)';
+    return 'Episode(id: $id, name: $name, season: $season, number: $number, summary: $summary, image: $image)';
   }
 
   @override
@@ -208,10 +208,10 @@ class _$_Episode implements _Episode {
             other is _$_Episode &&
             const DeepCollectionEquality().equals(other.id, id) &&
             const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.number, number) &&
             const DeepCollectionEquality().equals(other.season, season) &&
+            const DeepCollectionEquality().equals(other.number, number) &&
             const DeepCollectionEquality().equals(other.summary, summary) &&
-            const DeepCollectionEquality().equals(other.poster, poster));
+            const DeepCollectionEquality().equals(other.image, image));
   }
 
   @JsonKey(ignore: true)
@@ -220,10 +220,10 @@ class _$_Episode implements _Episode {
       runtimeType,
       const DeepCollectionEquality().hash(id),
       const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(number),
       const DeepCollectionEquality().hash(season),
+      const DeepCollectionEquality().hash(number),
       const DeepCollectionEquality().hash(summary),
-      const DeepCollectionEquality().hash(poster));
+      const DeepCollectionEquality().hash(image));
 
   @JsonKey(ignore: true)
   @override
@@ -240,10 +240,10 @@ abstract class _Episode implements Episode {
   const factory _Episode(
       {required final int id,
       required final String name,
-      required final int number,
       required final int season,
-      required final String summary,
-      final Poster? poster}) = _$_Episode;
+      final int? number,
+      final String? summary,
+      final Poster? image}) = _$_Episode;
 
   factory _Episode.fromJson(Map<String, dynamic> json) = _$_Episode.fromJson;
 
@@ -252,13 +252,13 @@ abstract class _Episode implements Episode {
   @override
   String get name;
   @override
-  int get number;
-  @override
   int get season;
   @override
-  String get summary;
+  int? get number;
   @override
-  Poster? get poster;
+  String? get summary;
+  @override
+  Poster? get image;
   @override
   @JsonKey(ignore: true)
   _$$_EpisodeCopyWith<_$_Episode> get copyWith =>

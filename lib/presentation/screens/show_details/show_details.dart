@@ -1,83 +1,26 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:jobsity_challenge/data/models/episode.dart';
-import 'package:jobsity_challenge/data/models/poster.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
+import 'package:jobsity_challenge/presentation/screens/show_details/show_details_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/widgets/info_tag.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/widgets/season_tile.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/widgets/summary_tag.dart';
+import 'package:jobsity_challenge/presentation/widgets/async_snapshot_response_view.dart';
 import 'package:jobsity_challenge/presentation/widgets/border_text.dart';
 import 'package:jobsity_challenge/presentation/widgets/favorite_icon_button.dart';
 import 'package:jobsity_challenge/presentation/widgets/poster_image.dart';
-
-const episodeList = <Episode>[
-  Episode(
-    id: 1,
-    name: 'Pilot',
-    number: 1,
-    season: 1,
-    summary:
-        "When the residents of Chester's Mill find themselves trapped under a massive transparent dome with no way out, they struggle to survive as resources rapidly dwindle and panic quickly escalates.",
-    poster: Poster(
-      medium:
-          'https://static.tvmaze.com/uploads/images/medium_landscape/1/4388.jpg',
-      original:
-          'https://static.tvmaze.com/uploads/images/original_untouched/1/4388.jpg',
-    ),
-  ),
-  Episode(
-    id: 2,
-    name: 'Pilot 2',
-    number: 2,
-    season: 1,
-    summary:
-        "When the residents of Chester's Mill find themselves trapped under a massive transparent dome with no way out, they struggle to survive as resources rapidly dwindle and panic quickly escalates.",
-    // poster: Poster(
-    //   mediumUrl:
-    //       'https://static.tvmaze.com/uploads/images/medium_landscape/1/4388.jpg',
-    //   originalUrl:
-    //       'https://static.tvmaze.com/uploads/images/original_untouched/1/4388.jpg',
-    // ),
-  ),
-  Episode(
-    id: 3,
-    name: 'Pilot 3',
-    number: 3,
-    season: 1,
-    summary:
-        "When the residents of Chester's Mill find themselves trapped under a massive transparent dome with no way out, they struggle to survive as resources rapidly dwindle and panic quickly escalates.",
-    poster: Poster(
-      medium:
-          'https://static.tvmaze.com/uploads/images/medium_landscape/1/4388.jpg',
-      original:
-          'https://static.tvmaze.com/uploads/images/original_untouched/1/4388.jpg',
-    ),
-  ),
-  Episode(
-    id: 4,
-    name: 'Heads Will Roll',
-    number: 1,
-    season: 2,
-    summary:
-        "Barbie's fate lies in Big Jim's hands, and the Dome presents a new threat when it becomes magnetized. Meanwhile, Julia seeks out the help of a stranger to save the life of a mysterious girl who may hold clues to origin of the Dome.",
-    poster: Poster(
-      medium:
-          'https://static.tvmaze.com/uploads/images/medium_landscape/4/10446.jpg',
-      original:
-          'https://static.tvmaze.com/uploads/images/original_untouched/4/10446.jpg',
-    ),
-  ),
-];
 
 class ShowDetailsScreen extends StatelessWidget {
   const ShowDetailsScreen({
     super.key,
     required this.show,
+    required this.presenter,
   });
 
   static const routeName = '/details';
 
   final Show show;
+  final ShowDetailsPresenter presenter;
 
   @override
   Widget build(BuildContext context) {
@@ -147,14 +90,39 @@ class ShowDetailsScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headline4,
                 ),
                 const SizedBox(height: 32),
-                ...episodeList
-                    .groupListsBy((episode) => 'Season ${episode.season}')
-                    .map((season, list) {
-                  return MapEntry(
-                    season,
-                    SeasonTile(title: season, episodeList: list),
-                  );
-                }).values,
+                StreamBuilder(
+                  stream: presenter.onNewState,
+                  builder: (context, snapshot) {
+                    return AsyncSnapshotResponseView<Success, Loading, Error>(
+                      snapshot: snapshot,
+                      successWidgetBuilder: (_, data) {
+                        final episodeList = data.episodeList;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ...episodeList
+                                .groupListsBy(
+                                    (episode) => 'Season ${episode.season}')
+                                .map((season, list) {
+                              return MapEntry(
+                                season,
+                                SeasonTile(title: season, episodeList: list),
+                              );
+                            }).values
+                          ],
+                        );
+                      },
+                      errorWidgetBuilder: (_, __) {
+                        return const Center(
+                          child: Text(
+                            'Ops, something went wrong while trying to load the episodes',
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ],
             ),
           ),

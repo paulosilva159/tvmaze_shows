@@ -46,6 +46,7 @@ class HomePresenter with SubscriptionHolder {
 
   void dispose() {
     _stateSubject.close();
+    _changePageSubject.close();
     disposeAll();
   }
 }

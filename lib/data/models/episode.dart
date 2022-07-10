@@ -9,10 +9,10 @@ class Episode with _$Episode {
   const factory Episode({
     required int id,
     required String name,
-    required int number,
     required int season,
-    required String summary,
-    Poster? poster,
+    int? number,
+    String? summary,
+    Poster? image,
   }) = _Episode;
 
   factory Episode.fromJson(Map<String, Object?> json) =>

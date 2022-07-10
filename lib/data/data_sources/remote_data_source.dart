@@ -14,9 +14,14 @@ class ShowDataSourceImpl implements ShowDataSource {
   final Dio dio;
 
   @override
-  Future<List<Episode>> fetchEpisodeListByShow(int showId) {
-    // TODO: implement fetchEpisodeListByShow
-    throw UnimplementedError();
+  Future<List<Episode>> fetchEpisodeListByShow(int showId) async {
+    final response = await dio.get(
+      UrlBuilder.episodesList(showId),
+    );
+
+    return response.data
+        .map<Episode>((json) => Episode.fromJson(json))
+        .toList();
   }
 
   @override

@@ -64,9 +64,9 @@ class EpisodeDetails extends StatelessWidget {
               style: Theme.of(context).textTheme.headline5,
             ),
             const SizedBox(height: 16),
-            if (episode.poster != null)
+            if (episode.image != null)
               PosterImage.medium(
-                poster: episode.poster,
+                poster: episode.image,
                 isPortrait: true,
               ),
             const SizedBox(height: 24),
@@ -76,10 +76,11 @@ class EpisodeDetails extends StatelessWidget {
               maxLines: 2,
             ),
             const SizedBox(height: 16),
-            SummaryTag(
-              title: 'Summary',
-              info: episode.summary,
-            ),
+            if (episode.summary != null)
+              SummaryTag(
+                title: 'Summary',
+                info: episode.summary!,
+              ),
           ],
         ),
       ),

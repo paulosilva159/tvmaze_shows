@@ -6,6 +6,7 @@ import 'package:jobsity_challenge/data/models/show.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
+import 'package:jobsity_challenge/presentation/screens/show_details/show_details_presenter.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -53,7 +54,25 @@ class _GlobalProviderState extends State<GlobalProvider> {
           final show = settings.arguments as Show;
 
           return MaterialPageRoute(
-            builder: (_) => ShowDetailsScreen(show: show),
+            builder: (_) {
+              return ProxyProvider<ShowDataSource, ShowDetailsPresenter>(
+                update: (_, dataSource, __) {
+                  return ShowDetailsPresenter(
+                    showId: show.id,
+                    dataSource: dataSource,
+                  );
+                },
+                dispose: (_, presenter) => presenter.dispose(),
+                child: Consumer<ShowDetailsPresenter>(
+                  builder: (_, presenter, __) {
+                    return ShowDetailsScreen(
+                      show: show,
+                      presenter: presenter,
+                    );
+                  },
+                ),
+              );
+            },
           );
         }
 

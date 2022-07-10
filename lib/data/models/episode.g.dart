@@ -9,20 +9,20 @@ part of 'episode.dart';
 _$_Episode _$$_EpisodeFromJson(Map<String, dynamic> json) => _$_Episode(
       id: json['id'] as int,
       name: json['name'] as String,
-      number: json['number'] as int,
       season: json['season'] as int,
-      summary: json['summary'] as String,
-      poster: json['poster'] == null
+      number: json['number'] as int?,
+      summary: json['summary'] as String?,
+      image: json['image'] == null
           ? null
-          : Poster.fromJson(json['poster'] as Map<String, dynamic>),
+          : Poster.fromJson(json['image'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$_EpisodeToJson(_$_Episode instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'number': instance.number,
       'season': instance.season,
+      'number': instance.number,
       'summary': instance.summary,
-      'poster': instance.poster,
+      'image': instance.image,
     };

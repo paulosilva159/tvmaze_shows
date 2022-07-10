@@ -27,7 +27,7 @@ class EpisodeTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 PosterImage.medium(
-                  poster: episode.poster,
+                  poster: episode.image,
                   isPortrait: true,
                 ),
                 const SizedBox(height: 8),
