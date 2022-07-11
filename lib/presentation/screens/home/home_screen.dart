@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
+import 'package:jobsity_challenge/presentation/screens/authentication_settings/authentication_settings_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/favorites/favorites_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/people/people_screen.dart';
@@ -16,7 +17,7 @@ class HomeScreen extends StatefulWidget {
   });
 
   final HomePresenter presenter;
-  static const routeName = '/';
+  static const routeName = '/home';
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -83,29 +84,26 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Builder(
-                  builder: (context) {
-                    return TextButton.icon(
-                      icon: const Icon(Icons.favorite_rounded),
-                      label: const Text('See favorites'),
-                      onPressed: () {
-                        Navigator.of(context)
-                            .pushNamed(FavoritesScreen.routeName);
-                        Scaffold.of(context).closeDrawer();
-                      },
-                    );
+                TextButton.icon(
+                  icon: const Icon(Icons.favorite_rounded),
+                  label: const Text('See favorites'),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(FavoritesScreen.routeName);
                   },
                 ),
-                Builder(
-                  builder: (context) {
-                    return TextButton.icon(
-                      icon: const Icon(Icons.people_alt_rounded),
-                      label: const Text('Search for people'),
-                      onPressed: () {
-                        Navigator.of(context).pushNamed(PeopleScreen.routeName);
-                        Scaffold.of(context).closeDrawer();
-                      },
-                    );
+                TextButton.icon(
+                  icon: const Icon(Icons.people_alt_rounded),
+                  label: const Text('Search for people'),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(PeopleScreen.routeName);
+                  },
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.settings),
+                  label: const Text('Authentication settings'),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pushNamed(AuthenticationSettingsScreen.routeName);
                   },
                 ),
               ],

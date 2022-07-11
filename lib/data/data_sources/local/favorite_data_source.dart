@@ -37,7 +37,6 @@ class FavoriteDataSourceImpl implements FavoriteDataSource {
   List<int> getFavoriteList() {
     final storedValue = storage.getStringList(_favoriteShowListKey);
     final convertedStored = storedValue?.map(int.parse).toList();
-
     return convertedStored ?? <int>[];
   }
 

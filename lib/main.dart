@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/global_provider.dart';
-import 'package:jobsity_challenge/presentation/screens/home/home_screen.dart';
+import 'package:jobsity_challenge/presentation/screens/authentication/authentication_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,7 +23,7 @@ class TVMaze extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: HomeScreen.routeName,
+      initialRoute: AuthenticationScreen.routeName,
       onGenerateRoute: Provider.of<RouteFactory>(context, listen: false),
     );
   }

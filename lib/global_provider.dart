@@ -1,11 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:jobsity_challenge/data/data_sources/local_data_source.dart';
+import 'package:jobsity_challenge/data/data_sources/local/favorite_data_source.dart';
+import 'package:jobsity_challenge/data/data_sources/local/user_data_source.dart';
 import 'package:jobsity_challenge/data/data_sources/remote/infrastructure/url_builder.dart';
 import 'package:jobsity_challenge/data/data_sources/remote/people_data_source.dart';
 import 'package:jobsity_challenge/data/data_sources/remote/show_data_source.dart';
 import 'package:jobsity_challenge/data/models/person.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
+import 'package:jobsity_challenge/presentation/screens/authentication/authentication_presenter.dart';
+import 'package:jobsity_challenge/presentation/screens/authentication/authentication_screen.dart';
+import 'package:jobsity_challenge/presentation/screens/authentication_settings/authentication_settings_presenter.dart';
+import 'package:jobsity_challenge/presentation/screens/authentication_settings/authentication_settings_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/favorites/favorites_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/favorites/favorites_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart';
@@ -40,11 +45,17 @@ class _GlobalProviderState extends State<GlobalProvider> {
 
   List<SingleChildWidget> _localProviders(SharedPreferences storage) => [
         Provider<SharedPreferences>(create: (_) => storage),
+        ProxyProvider<SharedPreferences, UserDataSource>(
+            update: (_, storage, __) {
+          return UserDataSourceImpl(storage: storage);
+        }),
         ProxyProvider<SharedPreferences, FavoriteDataSource>(
-          update: (_, storage, __) => FavoriteDataSourceImpl(
-            storage: storage,
-            favoriteChangeSink: _favoriteChangeSubject.sink,
-          ),
+          update: (_, storage, __) {
+            return FavoriteDataSourceImpl(
+              storage: storage,
+              favoriteChangeSink: _favoriteChangeSubject.sink,
+            );
+          },
         ),
       ];
 
@@ -67,30 +78,53 @@ class _GlobalProviderState extends State<GlobalProvider> {
           return (settings) {
             final routeName = settings.name;
 
-            if (routeName == HomeScreen.routeName) {
-              return MaterialPageRoute(builder: (_) {
-                return ProxyProvider2<ShowDataSource, FavoriteDataSource,
-                    HomePresenter>(
-                  update: (_, showDataSource, favoriteDataSource, presenter) {
-                    return presenter ??
-                        HomePresenter(
-                          showDataSource: showDataSource,
-                          favoriteDataSource: favoriteDataSource,
-                          favoriteChangeStream: _favoriteChangeSubject.stream,
-                        );
-                  },
-                  dispose: (_, presenter) => presenter.dispose(),
-                  child: Consumer<HomePresenter>(
-                    builder: (_, presenter, __) {
-                      return HomeScreen(presenter: presenter);
+            if (routeName == AuthenticationScreen.routeName) {
+              return MaterialPageRoute(
+                settings: settings,
+                builder: (_) {
+                  return ProxyProvider<UserDataSource, AuthenticationPresenter>(
+                    update: (_, dataSource, presenter) {
+                      return AuthenticationPresenter(
+                        dataSource: dataSource,
+                      );
                     },
-                  ),
-                );
-              });
+                    dispose: (_, presenter) => presenter.dispose(),
+                    child: Consumer<AuthenticationPresenter>(
+                      builder: (_, presenter, __) {
+                        return AuthenticationScreen(presenter: presenter);
+                      },
+                    ),
+                  );
+                },
+              );
+            } else if (routeName == HomeScreen.routeName) {
+              return MaterialPageRoute(
+                settings: settings,
+                builder: (_) {
+                  return ProxyProvider2<ShowDataSource, FavoriteDataSource,
+                      HomePresenter>(
+                    update: (_, showDataSource, favoriteDataSource, presenter) {
+                      return presenter ??
+                          HomePresenter(
+                            showDataSource: showDataSource,
+                            favoriteDataSource: favoriteDataSource,
+                            favoriteChangeStream: _favoriteChangeSubject.stream,
+                          );
+                    },
+                    dispose: (_, presenter) => presenter.dispose(),
+                    child: Consumer<HomePresenter>(
+                      builder: (_, presenter, __) {
+                        return HomeScreen(presenter: presenter);
+                      },
+                    ),
+                  );
+                },
+              );
             } else if (routeName == ShowDetailsScreen.routeName) {
               final show = settings.arguments as Show;
 
               return MaterialPageRoute(
+                settings: settings,
                 builder: (_) {
                   return ProxyProvider2<ShowDataSource, FavoriteDataSource,
                       ShowDetailsPresenter>(
@@ -116,6 +150,7 @@ class _GlobalProviderState extends State<GlobalProvider> {
               );
             } else if (routeName == FavoritesScreen.routeName) {
               return MaterialPageRoute(
+                settings: settings,
                 builder: (_) {
                   return ProxyProvider2<ShowDataSource, FavoriteDataSource,
                       FavoritesPresenter>(
@@ -138,25 +173,29 @@ class _GlobalProviderState extends State<GlobalProvider> {
                 },
               );
             } else if (routeName == PeopleScreen.routeName) {
-              return MaterialPageRoute(builder: (_) {
-                return ProxyProvider<PeopleDataSource, PeoplePresenter>(
-                  update: (_, dataSource, presenter) {
-                    return PeoplePresenter(
-                      dataSource: dataSource,
-                    );
-                  },
-                  dispose: (_, presenter) => presenter.dispose(),
-                  child: Consumer<PeoplePresenter>(
-                    builder: (_, presenter, __) {
-                      return PeopleScreen(presenter: presenter);
+              return MaterialPageRoute(
+                settings: settings,
+                builder: (_) {
+                  return ProxyProvider<PeopleDataSource, PeoplePresenter>(
+                    update: (_, dataSource, presenter) {
+                      return PeoplePresenter(
+                        dataSource: dataSource,
+                      );
                     },
-                  ),
-                );
-              });
+                    dispose: (_, presenter) => presenter.dispose(),
+                    child: Consumer<PeoplePresenter>(
+                      builder: (_, presenter, __) {
+                        return PeopleScreen(presenter: presenter);
+                      },
+                    ),
+                  );
+                },
+              );
             } else if (routeName == PersonDetailsScreen.routeName) {
               final person = settings.arguments as Person;
 
               return MaterialPageRoute(
+                settings: settings,
                 builder: (_) {
                   return ProxyProvider<PeopleDataSource,
                       PersonDetailsPresenter>(
@@ -173,6 +212,26 @@ class _GlobalProviderState extends State<GlobalProvider> {
                           person: person,
                           presenter: presenter,
                         );
+                      },
+                    ),
+                  );
+                },
+              );
+            } else if (routeName == AuthenticationSettingsScreen.routeName) {
+              return MaterialPageRoute(
+                settings: settings,
+                builder: (_) {
+                  return ProxyProvider<UserDataSource,
+                      AuthenticationSettingsPresenter>(
+                    update: (_, dataSource, __) {
+                      return AuthenticationSettingsPresenter(
+                          dataSource: dataSource);
+                    },
+                    dispose: (_, presenter) => presenter.dispose(),
+                    child: Consumer<AuthenticationSettingsPresenter>(
+                      builder: (_, presenter, __) {
+                        return AuthenticationSettingsScreen(
+                            presenter: presenter);
                       },
                     ),
                   );
