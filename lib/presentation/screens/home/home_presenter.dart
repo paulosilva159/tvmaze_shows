@@ -15,9 +15,10 @@ class HomePresenter with SubscriptionHolder {
         Stream<int>.value(0),
         _changePageSubject.stream,
       ]).flatMap((page) => _fetchShowList(page)),
-      _searchQuerySubject.stream
-          .debounceTime(const Duration(seconds: 1))
-          .flatMap((query) {
+      Rx.merge([
+        _searchQuerySubject.stream.debounceTime(const Duration(seconds: 1)),
+        _tryAgainSubject.stream,
+      ]).flatMap((query) {
         if (query == null || query.isEmpty) {
           return _fetchShowList(0);
         } else {
@@ -46,6 +47,9 @@ class HomePresenter with SubscriptionHolder {
 
   final _toggleShowFavoriteStateSubject = PublishSubject<int>();
   Sink<int> get onToggleFavorite => _toggleShowFavoriteStateSubject.sink;
+
+  final _tryAgainSubject = PublishSubject<String?>();
+  Sink<String?> get onTryAgain => _tryAgainSubject;
 
   Stream<HomeState> _onFavoriteChange() async* {
     final state = _stateSubject.value;
@@ -114,6 +118,7 @@ class HomePresenter with SubscriptionHolder {
 
   void dispose() {
     _stateSubject.close();
+    _tryAgainSubject.close();
     _changePageSubject.close();
     _searchQuerySubject.close();
     _toggleShowFavoriteStateSubject.close();

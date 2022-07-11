@@ -74,6 +74,8 @@ class _PeopleScreenState extends State<PeopleScreen> {
           builder: (_, snapshot) {
             return AsyncSnapshotResponseView<Success, Loading, Error>(
               snapshot: snapshot,
+              onTryAgain: () => widget.presenter.onTryAgain
+                  .add(queryTextEditingController.text),
               successWidgetBuilder: (_, data) {
                 if (data.peopleList.isEmpty) {
                   return Column(

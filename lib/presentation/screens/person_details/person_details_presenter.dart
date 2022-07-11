@@ -8,7 +8,10 @@ class PersonDetailsPresenter with SubscriptionHolder {
     required this.personId,
     required this.dataSource,
   }) {
-    Stream.value(null)
+    Rx.merge([
+      Stream.value(null),
+      _tryAgainSubject.stream,
+    ])
         .flatMap((value) => _fetchCastCredits())
         .listen(_stateSubject.sink.add)
         .addTo(subscriptions);
@@ -19,6 +22,9 @@ class PersonDetailsPresenter with SubscriptionHolder {
 
   final _stateSubject = BehaviorSubject<PersonDetailsState>();
   Stream<PersonDetailsState> get onNewState => _stateSubject.stream;
+
+  final _tryAgainSubject = PublishSubject<void>();
+  Sink<void> get onTryAgain => _tryAgainSubject;
 
   Stream<PersonDetailsState> _fetchCastCredits() async* {
     yield Loading();
@@ -34,6 +40,7 @@ class PersonDetailsPresenter with SubscriptionHolder {
 
   void dispose() {
     _stateSubject.close();
+    _tryAgainSubject.close();
     disposeAll();
   }
 }

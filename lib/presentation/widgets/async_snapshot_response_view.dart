@@ -8,6 +8,7 @@ class AsyncSnapshotResponseView<Success, Loading, Error>
     required this.successWidgetBuilder,
     this.loadingWidgetBuilder,
     this.errorWidgetBuilder,
+    this.onTryAgain,
   });
 
   final AsyncSnapshot snapshot;
@@ -16,6 +17,7 @@ class AsyncSnapshotResponseView<Success, Loading, Error>
   final Widget Function(BuildContext context, Loading loading)?
       loadingWidgetBuilder;
   final Widget Function(BuildContext context, Error error)? errorWidgetBuilder;
+  final VoidCallback? onTryAgain;
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +28,11 @@ class AsyncSnapshotResponseView<Success, Loading, Error>
           const GenericLoadingIndicator();
     } else if (data is Error) {
       return errorWidgetBuilder?.call(context, data) ??
-          const GenericErrorIndicator();
+          GenericErrorIndicator(onTryAgain: onTryAgain);
     } else if (data is Success) {
       return successWidgetBuilder(context, data);
     }
 
-    // TODO(paulosilva): Implement custom exception
     throw Exception();
   }
 }
@@ -48,12 +49,27 @@ class GenericLoadingIndicator extends StatelessWidget {
 }
 
 class GenericErrorIndicator extends StatelessWidget {
-  const GenericErrorIndicator({Key? key}) : super(key: key);
+  const GenericErrorIndicator({super.key, this.message, this.onTryAgain});
+
+  final String? message;
+  final VoidCallback? onTryAgain;
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Error'),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(message ?? 'Ops, something went wrong...'),
+          if (onTryAgain != null) ...[
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: onTryAgain,
+              child: const Text('Try again'),
+            ),
+          ]
+        ],
+      ),
     );
   }
 }

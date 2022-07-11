@@ -12,7 +12,10 @@ class FavoritesPresenter with SubscriptionHolder {
     required Stream<void> favoriteChangeStream,
   }) {
     Rx.merge([
-      Stream.value(null).flatMap((_) => _fetchFavoriteShowList()),
+      Rx.merge([
+        Stream.value(null),
+        _tryAgainSubject.stream,
+      ]).flatMap((_) => _fetchFavoriteShowList()),
       favoriteChangeStream.flatMap((_) => _updateFavoriteShowList())
     ]).listen(_stateSubject.sink.add).addTo(subscriptions);
 
@@ -29,6 +32,9 @@ class FavoritesPresenter with SubscriptionHolder {
 
   final _removeFavoriteSubject = PublishSubject<int>();
   Sink<int> get onRemove => _removeFavoriteSubject.sink;
+
+  final _tryAgainSubject = PublishSubject<void>();
+  Sink<void> get onTryAgain => _tryAgainSubject;
 
   Future<void> _removeFavorite(int showId) async {
     await favoriteDataSource.unfavoriteShow(showId);
@@ -63,6 +69,9 @@ class FavoritesPresenter with SubscriptionHolder {
   }
 
   void dispose() {
+    _stateSubject.close();
+    _tryAgainSubject.close();
+    _removeFavoriteSubject.close();
     disposeAll();
   }
 }

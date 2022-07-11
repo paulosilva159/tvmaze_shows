@@ -7,7 +7,6 @@ class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key, required this.presenter});
 
   final FavoritesPresenter presenter;
-
   static const routeName = '/favorites';
 
   @override
@@ -18,49 +17,51 @@ class FavoritesScreen extends StatelessWidget {
           title: const Text('Favorite shows'),
         ),
         body: StreamBuilder<FavoritesState>(
-            stream: presenter.onNewState,
-            builder: (context, snapshot) {
-              return AsyncSnapshotResponseView<Success, Loading, Error>(
-                snapshot: snapshot,
-                successWidgetBuilder: (context, data) {
-                  if (data.showList.isEmpty) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(32),
-                        child: Text(
-                          'Looks like you have not added any show to your favorites list',
-                          textAlign: TextAlign.center,
-                        ),
+          stream: presenter.onNewState,
+          builder: (context, snapshot) {
+            return AsyncSnapshotResponseView<Success, Loading, Error>(
+              snapshot: snapshot,
+              onTryAgain: () => presenter.onTryAgain.add(null),
+              successWidgetBuilder: (context, data) {
+                if (data.showList.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32),
+                      child: Text(
+                        'Looks like you have not added any show to your favorites list',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: data.showList.length,
+                  itemBuilder: (context, index) {
+                    final show = data.showList[index];
+
+                    return ListTile(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                            ShowDetailsScreen.routeName,
+                            arguments: show);
+                      },
+                      leading: const Icon(
+                        Icons.favorite_rounded,
+                        color: Colors.pink,
+                      ),
+                      title: Text(show.name),
+                      trailing: IconButton(
+                        onPressed: () => presenter.onRemove.add(show.id),
+                        icon: const Icon(Icons.delete),
                       ),
                     );
-                  }
-
-                  return ListView.builder(
-                    itemCount: data.showList.length,
-                    itemBuilder: (context, index) {
-                      final show = data.showList[index];
-
-                      return ListTile(
-                        onTap: () {
-                          Navigator.of(context).pushNamed(
-                              ShowDetailsScreen.routeName,
-                              arguments: show);
-                        },
-                        leading: const Icon(
-                          Icons.favorite_rounded,
-                          color: Colors.pink,
-                        ),
-                        title: Text(show.name),
-                        trailing: IconButton(
-                          onPressed: () => presenter.onRemove.add(show.id),
-                          icon: const Icon(Icons.delete),
-                        ),
-                      );
-                    },
-                  );
-                },
-              );
-            }),
+                  },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

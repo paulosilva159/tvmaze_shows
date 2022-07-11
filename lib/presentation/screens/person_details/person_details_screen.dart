@@ -16,7 +16,6 @@ class PersonDetailsScreen extends StatelessWidget {
 
   final Person person;
   final PersonDetailsPresenter presenter;
-
   static const routeName = '/person';
 
   @override
@@ -97,10 +96,10 @@ class PersonDetailsScreen extends StatelessWidget {
                         );
                       },
                       errorWidgetBuilder: (_, __) {
-                        return const Center(
-                          child: Text(
-                            'Ops, something went wrong while trying to load the shows',
-                          ),
+                        return GenericErrorIndicator(
+                          onTryAgain: () => presenter.onTryAgain.add(null),
+                          message:
+                              'Ops, something went wrong while trying to load the shows',
                         );
                       },
                     );

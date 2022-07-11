@@ -11,7 +11,10 @@ class ShowDetailsPresenter with SubscriptionHolder {
     required this.favoriteDataSource,
     required Stream<void> favoriteChangeStream,
   }) {
-    Stream.value(null)
+    Rx.merge([
+      Stream.value(null),
+      _tryAgainSubject.stream,
+    ])
         .flatMap((_) => _fetchEpisodeList())
         .listen(_stateSubject.sink.add)
         .addTo(subscriptions);
@@ -41,6 +44,9 @@ class ShowDetailsPresenter with SubscriptionHolder {
 
   final _toggleShowFavoriteStateSubject = PublishSubject<void>();
   Sink<void> get onToggleFavorite => _toggleShowFavoriteStateSubject.sink;
+
+  final _tryAgainSubject = PublishSubject<void>();
+  Sink<void> get onTryAgain => _tryAgainSubject;
 
   Stream<bool> _onFavoriteChange() async* {
     final favoriteList = favoriteDataSource.getFavoriteList();
@@ -75,6 +81,7 @@ class ShowDetailsPresenter with SubscriptionHolder {
 
   void dispose() {
     _stateSubject.close();
+    _tryAgainSubject.close();
     _favoriteStateSubject.close();
     _toggleShowFavoriteStateSubject.close();
     disposeAll();

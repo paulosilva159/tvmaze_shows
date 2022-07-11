@@ -10,9 +10,10 @@ class PeoplePresenter with SubscriptionHolder {
         Stream<int>.value(0),
         _changePageSubject.stream,
       ]).flatMap((page) => _fetchPeopleList(page)),
-      _searchQuerySubject.stream
-          .debounceTime(const Duration(seconds: 1))
-          .flatMap((query) {
+      Rx.merge([
+        _searchQuerySubject.stream.debounceTime(const Duration(seconds: 1)),
+        _tryAgainSubject.stream,
+      ]).flatMap((query) {
         if (query == null || query.isEmpty) {
           return _fetchPeopleList(0);
         } else {
@@ -32,6 +33,9 @@ class PeoplePresenter with SubscriptionHolder {
 
   final _searchQuerySubject = PublishSubject<String?>();
   Sink<String?> get onSearch => _searchQuerySubject.sink;
+
+  final _tryAgainSubject = PublishSubject<String?>();
+  Sink<String?> get onTryAgain => _tryAgainSubject;
 
   Stream<PeopleState> _fetchPeopleList(int page) async* {
     yield Loading();
@@ -67,6 +71,7 @@ class PeoplePresenter with SubscriptionHolder {
 
   void dispose() {
     _stateSubject.close();
+    _tryAgainSubject.close();
     _changePageSubject.close();
     _searchQuerySubject.close();
     disposeAll();

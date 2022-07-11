@@ -18,7 +18,7 @@ class ShowDetailsScreen extends StatelessWidget {
     required this.presenter,
   });
 
-  static const routeName = '/details';
+  static const routeName = '/show';
 
   final Show show;
   final ShowDetailsPresenter presenter;
@@ -31,15 +31,16 @@ class ShowDetailsScreen extends StatelessWidget {
         centerTitle: true,
         actions: [
           StreamBuilder<bool>(
-              stream: presenter.onFavoriteState,
-              builder: (context, snapshot) {
-                final data = snapshot.data;
+            stream: presenter.onFavoriteState,
+            builder: (context, snapshot) {
+              final data = snapshot.data;
 
-                return FavoriteIconButton(
-                  isFavorite: data ?? false,
-                  onToggle: () => presenter.onToggleFavorite.add(null),
-                );
-              })
+              return FavoriteIconButton(
+                isFavorite: data ?? false,
+                onToggle: () => presenter.onToggleFavorite.add(null),
+              );
+            },
+          )
         ],
       ),
       body: Stack(
@@ -114,20 +115,22 @@ class ShowDetailsScreen extends StatelessWidget {
                             ...episodeList
                                 .groupListsBy(
                                     (episode) => 'Season ${episode.season}')
-                                .map((season, list) {
-                              return MapEntry(
-                                season,
-                                _SeasonTile(title: season, episodeList: list),
-                              );
-                            }).values
+                                .map(
+                              (season, list) {
+                                return MapEntry(
+                                  season,
+                                  _SeasonTile(title: season, episodeList: list),
+                                );
+                              },
+                            ).values
                           ],
                         );
                       },
                       errorWidgetBuilder: (_, __) {
-                        return const Center(
-                          child: Text(
-                            'Ops, something went wrong while trying to load the episodes',
-                          ),
+                        return GenericErrorIndicator(
+                          message:
+                              'Ops, something went wrong while trying to load the episodes',
+                          onTryAgain: () => presenter.onTryAgain.add(null),
                         );
                       },
                     );

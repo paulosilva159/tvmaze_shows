@@ -111,85 +111,88 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         body: StreamBuilder<HomeState>(
-            stream: widget.presenter.onNewState,
-            builder: (context, snapshot) {
-              return AsyncSnapshotResponseView<Success, Loading, Error>(
-                snapshot: snapshot,
-                successWidgetBuilder: (context, data) {
-                  if (data.showList.isEmpty) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Expanded(
-                          child: Center(
-                            child: Text(
-                                'Your search for "${queryTextEditingController.text}" returned nothing :('),
-                          ),
-                        ),
-                        PageChangeButtonRow(
-                          hasPreviousButton: data.previousPage != null,
-                          hasNextButton: false,
-                          onPreviousPressed: () => widget.presenter.onChangePage
-                              .add(data.previousPage!),
-                        ),
-                        const SizedBox(height: 64)
-                      ],
-                    );
-                  }
-
-                  return CustomScrollView(
-                    slivers: [
-                      SliverPadding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 32,
-                        ),
-                        sliver: SliverGrid(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final show = data.showList[index];
-
-                              return _ShowTile(
-                                show: show,
-                                onTap: () {
-                                  Navigator.of(context).pushNamed(
-                                    ShowDetailsScreen.routeName,
-                                    arguments: show,
-                                  );
-                                },
-                                onFavoriteToggle: () => widget
-                                    .presenter.onToggleFavorite
-                                    .add(show.id),
-                                isFavorite:
-                                    data.favoriteShowList.contains(show.id),
-                              );
-                            },
-                            childCount: data.showList.length,
-                          ),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            mainAxisSpacing: 32,
-                            crossAxisSpacing: 16,
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.75,
-                          ),
+          stream: widget.presenter.onNewState,
+          builder: (context, snapshot) {
+            return AsyncSnapshotResponseView<Success, Loading, Error>(
+              snapshot: snapshot,
+              onTryAgain: () => widget.presenter.onTryAgain
+                  .add(queryTextEditingController.text),
+              successWidgetBuilder: (context, data) {
+                if (data.showList.isEmpty) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                              'Your search for "${queryTextEditingController.text}" returned nothing :('),
                         ),
                       ),
-                      SliverToBoxAdapter(
-                        child: PageChangeButtonRow(
-                          hasPreviousButton: data.previousPage != null,
-                          hasNextButton: data.nextPage != null,
-                          onPreviousPressed: () => widget.presenter.onChangePage
-                              .add(data.previousPage!),
-                          onNextPressed: () =>
-                              widget.presenter.onChangePage.add(data.nextPage!),
-                        ),
+                      PageChangeButtonRow(
+                        hasPreviousButton: data.previousPage != null,
+                        hasNextButton: false,
+                        onPreviousPressed: () => widget.presenter.onChangePage
+                            .add(data.previousPage!),
                       ),
+                      const SizedBox(height: 64)
                     ],
                   );
-                },
-              );
-            }),
+                }
+
+                return CustomScrollView(
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 32,
+                      ),
+                      sliver: SliverGrid(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final show = data.showList[index];
+
+                            return _ShowTile(
+                              show: show,
+                              onTap: () {
+                                Navigator.of(context).pushNamed(
+                                  ShowDetailsScreen.routeName,
+                                  arguments: show,
+                                );
+                              },
+                              onFavoriteToggle: () => widget
+                                  .presenter.onToggleFavorite
+                                  .add(show.id),
+                              isFavorite:
+                                  data.favoriteShowList.contains(show.id),
+                            );
+                          },
+                          childCount: data.showList.length,
+                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          mainAxisSpacing: 32,
+                          crossAxisSpacing: 16,
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.75,
+                        ),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: PageChangeButtonRow(
+                        hasPreviousButton: data.previousPage != null,
+                        hasNextButton: data.nextPage != null,
+                        onPreviousPressed: () => widget.presenter.onChangePage
+                            .add(data.previousPage!),
+                        onNextPressed: () =>
+                            widget.presenter.onChangePage.add(data.nextPage!),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
