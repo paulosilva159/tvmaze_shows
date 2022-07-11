@@ -49,26 +49,46 @@ class GenericLoadingIndicator extends StatelessWidget {
 }
 
 class GenericErrorIndicator extends StatelessWidget {
-  const GenericErrorIndicator({super.key, this.message, this.onTryAgain});
+  const GenericErrorIndicator({
+    super.key,
+    this.message,
+    this.onTryAgain,
+    this.messageStyle,
+    this.backgroundColor,
+  });
 
   final String? message;
+  final Color? backgroundColor;
+  final TextStyle? messageStyle;
   final VoidCallback? onTryAgain;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(message ?? 'Ops, something went wrong...'),
-          if (onTryAgain != null) ...[
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: onTryAgain,
-              child: const Text('Try again'),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: backgroundColor ?? Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              message ?? 'Ops, something went wrong...',
+              style: messageStyle,
+              textAlign: TextAlign.center,
             ),
-          ]
-        ],
+            if (onTryAgain != null) ...[
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: onTryAgain,
+                child: const Text('Try again'),
+              ),
+            ]
+          ],
+        ),
       ),
     );
   }

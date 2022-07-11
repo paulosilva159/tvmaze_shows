@@ -128,6 +128,7 @@ class ShowDetailsScreen extends StatelessWidget {
                       },
                       errorWidgetBuilder: (_, __) {
                         return GenericErrorIndicator(
+                          backgroundColor: Colors.white70,
                           message:
                               'Ops, something went wrong while trying to load the episodes',
                           onTryAgain: () => presenter.onTryAgain.add(null),
