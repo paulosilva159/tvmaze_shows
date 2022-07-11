@@ -12,9 +12,9 @@ import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart'
 import 'package:jobsity_challenge/presentation/screens/home/home_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/people/people_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/people/people_screen.dart';
-import 'package:jobsity_challenge/presentation/screens/person_details/person_details.dart';
+import 'package:jobsity_challenge/presentation/screens/person_details/person_details_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/person_details/person_details_presenter.dart';
-import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
+import 'package:jobsity_challenge/presentation/screens/show_details/show_details_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details_presenter.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -118,16 +118,16 @@ class _GlobalProviderState extends State<GlobalProvider> {
               return MaterialPageRoute(
                 builder: (_) {
                   return ProxyProvider2<ShowDataSource, FavoriteDataSource,
-                      FavoritesScreenPresenter>(
+                      FavoritesPresenter>(
                     update: (_, showDataSource, favoriteDataSource, __) {
-                      return FavoritesScreenPresenter(
+                      return FavoritesPresenter(
                         showDataSource: showDataSource,
                         favoriteDataSource: favoriteDataSource,
                         favoriteChangeStream: _favoriteChangeSubject.stream,
                       );
                     },
                     dispose: (_, presenter) => presenter.dispose(),
-                    child: Consumer<FavoritesScreenPresenter>(
+                    child: Consumer<FavoritesPresenter>(
                       builder: (_, presenter, __) {
                         return FavoritesScreen(
                           presenter: presenter,

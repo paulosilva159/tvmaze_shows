@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/presentation/screens/favorites/favorites_presenter.dart';
-import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
+import 'package:jobsity_challenge/presentation/screens/show_details/show_details_screen.dart';
 import 'package:jobsity_challenge/presentation/widgets/async_snapshot_response_view.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key, required this.presenter});
 
-  final FavoritesScreenPresenter presenter;
+  final FavoritesPresenter presenter;
 
   static const routeName = '/favorites';
 
@@ -17,7 +17,7 @@ class FavoritesScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Favorite shows'),
         ),
-        body: StreamBuilder<FavoritesScreenState>(
+        body: StreamBuilder<FavoritesState>(
             stream: presenter.onNewState,
             builder: (context, snapshot) {
               return AsyncSnapshotResponseView<Success, Loading, Error>(

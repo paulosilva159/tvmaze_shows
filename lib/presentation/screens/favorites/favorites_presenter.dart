@@ -5,8 +5,8 @@ import 'package:jobsity_challenge/data/data_sources/remote/show_data_source.dart
 import 'package:jobsity_challenge/data/models/show.dart';
 import 'package:rxdart/rxdart.dart';
 
-class FavoritesScreenPresenter with SubscriptionHolder {
-  FavoritesScreenPresenter({
+class FavoritesPresenter with SubscriptionHolder {
+  FavoritesPresenter({
     required this.showDataSource,
     required this.favoriteDataSource,
     required Stream<void> favoriteChangeStream,
@@ -24,8 +24,8 @@ class FavoritesScreenPresenter with SubscriptionHolder {
   final ShowDataSource showDataSource;
   final FavoriteDataSource favoriteDataSource;
 
-  final _stateSubject = BehaviorSubject<FavoritesScreenState>();
-  Stream<FavoritesScreenState> get onNewState => _stateSubject.stream;
+  final _stateSubject = BehaviorSubject<FavoritesState>();
+  Stream<FavoritesState> get onNewState => _stateSubject.stream;
 
   final _removeFavoriteSubject = PublishSubject<int>();
   Sink<int> get onRemove => _removeFavoriteSubject.sink;
@@ -34,7 +34,7 @@ class FavoritesScreenPresenter with SubscriptionHolder {
     await favoriteDataSource.unfavoriteShow(showId);
   }
 
-  Stream<FavoritesScreenState> _updateFavoriteShowList() async* {
+  Stream<FavoritesState> _updateFavoriteShowList() async* {
     final state = _stateSubject.value;
 
     if (state is Success) {
@@ -48,7 +48,7 @@ class FavoritesScreenPresenter with SubscriptionHolder {
     }
   }
 
-  Stream<FavoritesScreenState> _fetchFavoriteShowList() async* {
+  Stream<FavoritesState> _fetchFavoriteShowList() async* {
     yield Loading();
 
     try {
@@ -67,13 +67,13 @@ class FavoritesScreenPresenter with SubscriptionHolder {
   }
 }
 
-abstract class FavoritesScreenState {}
+abstract class FavoritesState {}
 
-class Error implements FavoritesScreenState {}
+class Error implements FavoritesState {}
 
-class Loading implements FavoritesScreenState {}
+class Loading implements FavoritesState {}
 
-class Success implements FavoritesScreenState {
+class Success implements FavoritesState {
   const Success({
     required this.showList,
   });

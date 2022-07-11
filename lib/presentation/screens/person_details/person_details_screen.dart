@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/data/models/person.dart';
 import 'package:jobsity_challenge/presentation/screens/person_details/person_details_presenter.dart';
-import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
+import 'package:jobsity_challenge/presentation/screens/show_details/show_details_screen.dart';
 import 'package:jobsity_challenge/presentation/widgets/async_snapshot_response_view.dart';
 import 'package:jobsity_challenge/presentation/widgets/border_text.dart';
 import 'package:jobsity_challenge/presentation/widgets/info_tag.dart';

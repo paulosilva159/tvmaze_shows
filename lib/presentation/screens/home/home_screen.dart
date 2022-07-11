@@ -4,7 +4,7 @@ import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart'
 import 'package:jobsity_challenge/presentation/screens/people/people_screen.dart';
 import 'package:jobsity_challenge/presentation/widgets/page_change_button_row.dart';
 import 'package:jobsity_challenge/presentation/screens/home/widgets/show_tile.dart';
-import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
+import 'package:jobsity_challenge/presentation/screens/show_details/show_details_screen.dart';
 import 'package:jobsity_challenge/presentation/widgets/async_snapshot_response_view.dart';
 
 class HomeScreen extends StatefulWidget {
