@@ -1,9 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:jobsity_challenge/data/models/episode.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details_presenter.dart';
+import 'package:jobsity_challenge/presentation/screens/show_details/widgets/episode_details.dart';
 import 'package:jobsity_challenge/presentation/widgets/info_tag.dart';
-import 'package:jobsity_challenge/presentation/screens/show_details/widgets/season_tile.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/widgets/summary_tag.dart';
 import 'package:jobsity_challenge/presentation/widgets/async_snapshot_response_view.dart';
 import 'package:jobsity_challenge/presentation/widgets/border_text.dart';
@@ -116,7 +117,7 @@ class ShowDetailsScreen extends StatelessWidget {
                                 .map((season, list) {
                               return MapEntry(
                                 season,
-                                SeasonTile(title: season, episodeList: list),
+                                _SeasonTile(title: season, episodeList: list),
                               );
                             }).values
                           ],
@@ -148,5 +149,80 @@ extension on List<String> {
 
       return '$previous, $actual';
     });
+  }
+}
+
+class _SeasonTile extends StatelessWidget {
+  const _SeasonTile({
+    required this.title,
+    required this.episodeList,
+  });
+
+  final String title;
+  final List<Episode> episodeList;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionTile(
+      title: Text(title),
+      collapsedBackgroundColor: Colors.white54,
+      backgroundColor: Colors.white54,
+      expandedAlignment: Alignment.centerLeft,
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: 16,
+              bottom: 16,
+              top: 8,
+            ),
+            child: Row(
+              children: episodeList
+                  .map(
+                    (episode) => _EpisodeTile(episode: episode),
+                  )
+                  .toList(),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class _EpisodeTile extends StatelessWidget {
+  const _EpisodeTile({required this.episode});
+
+  final Episode episode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 16),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => showEpisodeDetailsModal(context, episode: episode),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: PosterImage.biggerSide,
+              minWidth: PosterImage.biggerSide,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                PosterImage.medium(
+                  poster: episode.image,
+                  isPortrait: true,
+                ),
+                const SizedBox(height: 8),
+                Text(episode.name)
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
