@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:jobsity_challenge/commons/subscription_holder.dart';
 import 'package:jobsity_challenge/data/data_sources/local_data_source.dart';
 import 'package:jobsity_challenge/data/data_sources/remote/show_data_source.dart';
@@ -58,8 +57,7 @@ class FavoritesScreenPresenter with SubscriptionHolder {
         ..sortBy((show) => show.name);
 
       yield Success(showList: showList);
-    } catch (error) {
-      debugPrint(error.toString());
+    } catch (_) {
       yield Error();
     }
   }

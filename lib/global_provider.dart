@@ -4,6 +4,7 @@ import 'package:jobsity_challenge/data/data_sources/local_data_source.dart';
 import 'package:jobsity_challenge/data/data_sources/remote/infrastructure/url_builder.dart';
 import 'package:jobsity_challenge/data/data_sources/remote/people_data_source.dart';
 import 'package:jobsity_challenge/data/data_sources/remote/show_data_source.dart';
+import 'package:jobsity_challenge/data/models/person.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
 import 'package:jobsity_challenge/presentation/screens/favorites/favorites_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/favorites/favorites_screen.dart';
@@ -11,6 +12,8 @@ import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart'
 import 'package:jobsity_challenge/presentation/screens/home/home_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/people/people_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/people/people_screen.dart';
+import 'package:jobsity_challenge/presentation/screens/person_details/person_details.dart';
+import 'package:jobsity_challenge/presentation/screens/person_details/person_details_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details_presenter.dart';
 import 'package:provider/provider.dart';
@@ -150,6 +153,31 @@ class _GlobalProviderState extends State<GlobalProvider> {
                   ),
                 );
               });
+            } else if (routeName == PersonDetailsScreen.routeName) {
+              final person = settings.arguments as Person;
+
+              return MaterialPageRoute(
+                builder: (_) {
+                  return ProxyProvider<PeopleDataSource,
+                      PersonDetailsPresenter>(
+                    update: (_, dataSource, __) {
+                      return PersonDetailsPresenter(
+                        personId: person.id,
+                        dataSource: dataSource,
+                      );
+                    },
+                    dispose: (_, presenter) => presenter.dispose(),
+                    child: Consumer<PersonDetailsPresenter>(
+                      builder: (_, presenter, __) {
+                        return PersonDetailsScreen(
+                          person: person,
+                          presenter: presenter,
+                        );
+                      },
+                    ),
+                  );
+                },
+              );
             }
 
             return null;

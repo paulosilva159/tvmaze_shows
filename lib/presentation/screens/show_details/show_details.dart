@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details_presenter.dart';
-import 'package:jobsity_challenge/presentation/screens/show_details/widgets/info_tag.dart';
+import 'package:jobsity_challenge/presentation/widgets/info_tag.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/widgets/season_tile.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/widgets/summary_tag.dart';
 import 'package:jobsity_challenge/presentation/widgets/async_snapshot_response_view.dart';
