@@ -56,8 +56,10 @@ class _PeopleScreenState extends State<PeopleScreen> {
                   ),
                   IconButton(
                     onPressed: () {
-                      queryTextEditingController.clear();
-                      widget.presenter.onSearch.add(null);
+                      if (queryTextEditingController.text.isNotEmpty) {
+                        queryTextEditingController.clear();
+                        widget.presenter.onSearch.add(null);
+                      }
                     },
                     icon: const Icon(
                       Icons.clear,
