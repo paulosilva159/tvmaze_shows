@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
-import 'package:jobsity_challenge/data/infrastructure/url_builder.dart';
+import 'package:jobsity_challenge/data/data_sources/remote/infrastructure/url_builder.dart';
+import 'package:jobsity_challenge/data/data_sources/remote/model/paginated_response.dart';
 import 'package:jobsity_challenge/data/models/episode.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
 
 abstract class ShowDataSource {
-  Future<PaginatedResponse> fetchShowList(int page);
+  Future<PaginatedResponse<List<Show>>> fetchShowList(int page);
   Future<List<Episode>> fetchEpisodeListByShow(int showId);
   Future<List<Show>> searchShowByName(String query);
   Future<List<Show>> fetchShowListById(List<int> showIdList);
@@ -27,7 +28,7 @@ class ShowDataSourceImpl implements ShowDataSource {
   }
 
   @override
-  Future<PaginatedResponse> fetchShowList(int page) async {
+  Future<PaginatedResponse<List<Show>>> fetchShowList(int page) async {
     final previousPage = page != 0 ? page - 1 : null;
 
     try {
@@ -35,8 +36,8 @@ class ShowDataSourceImpl implements ShowDataSource {
         UrlBuilder.showList(page),
       );
 
-      return PaginatedResponse(
-        showList: response.data.map<Show>((json) {
+      return PaginatedResponse<List<Show>>(
+        value: response.data.map<Show>((json) {
           return Show.fromJson(json);
         }).toList(),
         previousPage: previousPage,
@@ -47,8 +48,8 @@ class ShowDataSourceImpl implements ShowDataSource {
           error is DioError && error.response?.statusCode == 404;
 
       if (isPaginationEnd) {
-        return PaginatedResponse(
-          showList: <Show>[],
+        return PaginatedResponse<List<Show>>(
+          value: <Show>[],
           previousPage: previousPage,
           nextPage: null,
         );
@@ -82,16 +83,4 @@ class ShowDataSourceImpl implements ShowDataSource {
 
     return showList;
   }
-}
-
-class PaginatedResponse {
-  const PaginatedResponse({
-    required this.showList,
-    required this.previousPage,
-    required this.nextPage,
-  });
-
-  final int? nextPage;
-  final int? previousPage;
-  final List<Show> showList;
 }

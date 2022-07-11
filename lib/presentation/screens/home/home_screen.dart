@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/presentation/screens/favorites/favorites_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart';
-import 'package:jobsity_challenge/presentation/screens/home/home_states.dart';
-import 'package:jobsity_challenge/presentation/screens/home/widgets/page_change_button_row.dart';
+import 'package:jobsity_challenge/presentation/screens/people/people_screen.dart';
+import 'package:jobsity_challenge/presentation/widgets/page_change_button_row.dart';
 import 'package:jobsity_challenge/presentation/screens/home/widgets/show_tile.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
 import 'package:jobsity_challenge/presentation/widgets/async_snapshot_response_view.dart';
@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Jobsity Movies'),
+          title: const Text('Jobsity Shows'),
           bottom: PreferredSize(
             preferredSize: const Size(double.infinity, 56),
             child: Padding(
@@ -87,6 +87,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: () {
                         Navigator.of(context)
                             .pushNamed(FavoritesScreen.routeName);
+                        Scaffold.of(context).closeDrawer();
+                      },
+                    );
+                  },
+                ),
+                Builder(
+                  builder: (context) {
+                    return TextButton.icon(
+                      icon: const Icon(Icons.people_alt_rounded),
+                      label: const Text('Search for people'),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(PeopleScreen.routeName);
                         Scaffold.of(context).closeDrawer();
                       },
                     );

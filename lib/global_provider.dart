@@ -1,13 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/data/data_sources/local_data_source.dart';
-import 'package:jobsity_challenge/data/data_sources/remote_data_source.dart';
-import 'package:jobsity_challenge/data/infrastructure/url_builder.dart';
+import 'package:jobsity_challenge/data/data_sources/remote/infrastructure/url_builder.dart';
+import 'package:jobsity_challenge/data/data_sources/remote/people_data_source.dart';
+import 'package:jobsity_challenge/data/data_sources/remote/show_data_source.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
 import 'package:jobsity_challenge/presentation/screens/favorites/favorites_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/favorites/favorites_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/home/home_screen.dart';
+import 'package:jobsity_challenge/presentation/screens/people/people_presenter.dart';
+import 'package:jobsity_challenge/presentation/screens/people/people_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details_presenter.dart';
 import 'package:provider/provider.dart';
@@ -50,6 +53,9 @@ class _GlobalProviderState extends State<GlobalProvider> {
     ),
     ProxyProvider<Dio, ShowDataSource>(
       update: (_, dio, __) => ShowDataSourceImpl(dio: dio),
+    ),
+    ProxyProvider<Dio, PeopleDataSource>(
+      update: (_, dio, __) => PeopleDataSourceImpl(dio: dio),
     ),
   ];
 
@@ -128,6 +134,22 @@ class _GlobalProviderState extends State<GlobalProvider> {
                   );
                 },
               );
+            } else if (routeName == PeopleScreen.routeName) {
+              return MaterialPageRoute(builder: (_) {
+                return ProxyProvider<PeopleDataSource, PeoplePresenter>(
+                  update: (_, dataSource, presenter) {
+                    return PeoplePresenter(
+                      dataSource: dataSource,
+                    );
+                  },
+                  dispose: (_, presenter) => presenter.dispose(),
+                  child: Consumer<PeoplePresenter>(
+                    builder: (_, presenter, __) {
+                      return PeopleScreen(presenter: presenter);
+                    },
+                  ),
+                );
+              });
             }
 
             return null;

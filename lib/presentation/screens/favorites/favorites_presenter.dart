@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jobsity_challenge/commons/subscription_holder.dart';
 import 'package:jobsity_challenge/data/data_sources/local_data_source.dart';
-import 'package:jobsity_challenge/data/data_sources/remote_data_source.dart';
+import 'package:jobsity_challenge/data/data_sources/remote/show_data_source.dart';
 import 'package:jobsity_challenge/data/models/show.dart';
 import 'package:rxdart/rxdart.dart';
 

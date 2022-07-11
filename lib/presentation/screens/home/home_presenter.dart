@@ -1,8 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:jobsity_challenge/commons/subscription_holder.dart';
 import 'package:jobsity_challenge/data/data_sources/local_data_source.dart';
-import 'package:jobsity_challenge/data/data_sources/remote_data_source.dart';
-import 'package:jobsity_challenge/presentation/screens/home/home_states.dart';
+import 'package:jobsity_challenge/data/data_sources/remote/show_data_source.dart';
+import 'package:jobsity_challenge/data/models/show.dart';
 import 'package:rxdart/rxdart.dart';
 
 class HomePresenter with SubscriptionHolder {
@@ -84,7 +83,7 @@ class HomePresenter with SubscriptionHolder {
 
       yield Success(
         favoriteShowList: favoriteShowList,
-        showList: paginatedResponse.showList,
+        showList: paginatedResponse.value,
         previousPage: paginatedResponse.previousPage,
         nextPage: paginatedResponse.nextPage,
       );
@@ -106,8 +105,7 @@ class HomePresenter with SubscriptionHolder {
         nextPage: null,
         showList: showList,
       );
-    } catch (error) {
-      debugPrint(error.toString());
+    } catch (_) {
       yield Error();
     }
   }
@@ -119,4 +117,24 @@ class HomePresenter with SubscriptionHolder {
     _toggleShowFavoriteStateSubject.close();
     disposeAll();
   }
+}
+
+abstract class HomeState {}
+
+class Error implements HomeState {}
+
+class Loading implements HomeState {}
+
+class Success implements HomeState {
+  const Success({
+    required this.favoriteShowList,
+    required this.previousPage,
+    required this.nextPage,
+    required this.showList,
+  });
+
+  final List<int> favoriteShowList;
+  final List<Show> showList;
+  final int? previousPage;
+  final int? nextPage;
 }
