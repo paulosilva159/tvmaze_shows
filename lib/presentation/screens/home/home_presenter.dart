@@ -15,7 +15,9 @@ class HomePresenter with SubscriptionHolder {
         Stream<int>.value(0),
         _changePageSubject.stream,
       ]).flatMap((page) => _fetchShowList(page)),
-      _searchQuerySubject.stream.flatMap((query) {
+      _searchQuerySubject.stream
+          .debounceTime(const Duration(seconds: 1))
+          .flatMap((query) {
         if (query == null || query.isEmpty) {
           return _fetchShowList(0);
         } else {

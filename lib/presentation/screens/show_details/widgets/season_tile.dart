@@ -16,8 +16,8 @@ class SeasonTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ExpansionTile(
       title: Text(title),
-      backgroundColor: Colors.white,
       collapsedBackgroundColor: Colors.white54,
+      backgroundColor: Colors.white54,
       expandedAlignment: Alignment.centerLeft,
       children: [
         SingleChildScrollView(

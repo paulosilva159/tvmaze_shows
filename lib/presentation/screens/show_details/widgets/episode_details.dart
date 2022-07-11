@@ -12,7 +12,7 @@ Future<void> showEpisodeDetailsModal(
   return showModalBottomSheet(
     elevation: 16,
     isScrollControlled: true,
-    backgroundColor: Colors.blueGrey,
+    backgroundColor: Colors.blue.withOpacity(0.75),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(32),
@@ -55,8 +55,10 @@ class EpisodeDetails extends StatelessWidget {
             ),
             Text(
               'Season ${episode.season}',
-              style:
-                  Theme.of(context).textTheme.headline5?.copyWith(fontSize: 14),
+              style: Theme.of(context).textTheme.headline5?.copyWith(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
             ),
             const SizedBox(height: 8),
             BorderText(

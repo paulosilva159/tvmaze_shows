@@ -25,13 +25,13 @@ class PersonTile extends StatelessWidget {
               tag: person,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.pink,
+                  color: Colors.blue,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 4,
                       offset: const Offset(0, 4),
-                      color: Colors.pink.shade300,
+                      color: Colors.blue.shade300,
                     )
                   ],
                 ),

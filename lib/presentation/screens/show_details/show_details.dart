@@ -62,7 +62,7 @@ class ShowDetailsScreen extends StatelessWidget {
                             tag: show,
                             child: Card(
                               elevation: 8,
-                              shadowColor: Colors.pink,
+                              shadowColor: Colors.blue,
                               child: PosterImage.medium(poster: show.image),
                             ),
                           ),
@@ -87,6 +87,8 @@ class ShowDetailsScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 32),
+                      InfoTag(title: 'Name', info: show.name),
+                      const SizedBox(height: 4),
                       if (show.summary != null)
                         SummaryTag(title: 'Summary', info: show.summary!),
                     ],

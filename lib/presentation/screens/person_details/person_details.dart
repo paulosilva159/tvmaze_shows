@@ -44,7 +44,7 @@ class PersonDetailsScreen extends StatelessWidget {
                         tag: person,
                         child: Card(
                           elevation: 8,
-                          shadowColor: Colors.pink,
+                          shadowColor: Colors.blue,
                           child: PosterImage.medium(poster: person.image),
                         ),
                       ),

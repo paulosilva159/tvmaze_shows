@@ -16,6 +16,7 @@ class EpisodeTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 16),
       child: Material(
+        color: Colors.transparent,
         child: InkWell(
           onTap: () => showEpisodeDetailsModal(context, episode: episode),
           child: ConstrainedBox(

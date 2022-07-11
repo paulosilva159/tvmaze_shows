@@ -10,7 +10,9 @@ class PeoplePresenter with SubscriptionHolder {
         Stream<int>.value(0),
         _changePageSubject.stream,
       ]).flatMap((page) => _fetchPeopleList(page)),
-      _searchQuerySubject.stream.flatMap((query) {
+      _searchQuerySubject.stream
+          .debounceTime(const Duration(seconds: 1))
+          .flatMap((query) {
         if (query == null || query.isEmpty) {
           return _fetchPeopleList(0);
         } else {

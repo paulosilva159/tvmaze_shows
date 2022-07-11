@@ -40,10 +40,10 @@ class _PeopleScreenState extends State<PeopleScreen> {
                     child: TextField(
                       textAlignVertical: TextAlignVertical.center,
                       controller: queryTextEditingController,
-                      textInputAction: TextInputAction.search,
-                      onSubmitted: (value) =>
+                      onChanged: (value) =>
                           widget.presenter.onSearch.add(value),
                       decoration: InputDecoration(
+                        hintText: 'Search...',
                         filled: true,
                         isDense: true,
                         fillColor: Colors.white,

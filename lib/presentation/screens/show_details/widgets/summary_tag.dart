@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:html/parser.dart' as html;
 
 class SummaryTag extends StatelessWidget {
   const SummaryTag({
@@ -12,6 +13,9 @@ class SummaryTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final parsedInfo = html.parse(info);
+    final infoText = parsedInfo.body?.text ?? '';
+
     return Card(
       color: Colors.white70,
       child: Padding(
@@ -28,7 +32,7 @@ class SummaryTag extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Text(info),
+              child: Text(infoText),
             ),
           ],
         ),
