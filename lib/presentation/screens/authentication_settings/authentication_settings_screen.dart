@@ -136,15 +136,25 @@ class _AuthenticationSettingsScreenState
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         final isValid =
                             pinFormKey.currentState?.validate() ?? false;
 
                         if (isValid) {
-                          final pin = int.parse(pinTextEditingController.text);
-                          pinTextEditingController.clear();
-                          widget.presenter.onUpsertPin.add(pin);
-                          pinFocusNode.unfocus();
+                          final isConfirmed =
+                              await showPinUpsertConfirmationDialog(
+                            context,
+                            isAuthenticationDisabled:
+                                data is AuthenticationDisabled,
+                          );
+
+                          if (isConfirmed) {
+                            final pin =
+                                int.parse(pinTextEditingController.text);
+                            pinTextEditingController.clear();
+                            widget.presenter.onUpsertPin.add(pin);
+                            pinFocusNode.unfocus();
+                          }
                         }
                       },
                       child: Text(buttonLabel),
@@ -152,10 +162,15 @@ class _AuthenticationSettingsScreenState
                     if (data is AuthenticationEnabled) ...[
                       const SizedBox(height: 8),
                       TextButton(
-                        onPressed: () {
-                          pinTextEditingController.clear();
-                          widget.presenter.onDeletePin.add(null);
-                          pinFocusNode.unfocus();
+                        onPressed: () async {
+                          final isConfirmed =
+                              await showPinDeleteConfirmationDialog(context);
+
+                          if (isConfirmed) {
+                            pinTextEditingController.clear();
+                            widget.presenter.onDeletePin.add(null);
+                            pinFocusNode.unfocus();
+                          }
                         },
                         child:
                             const Text('Delete pin and remove authentication'),
@@ -170,4 +185,58 @@ class _AuthenticationSettingsScreenState
       ),
     );
   }
+}
+
+Future<bool> showPinUpsertConfirmationDialog(BuildContext context,
+    {bool isAuthenticationDisabled = true}) async {
+  final isConfirmed = await showDialog<bool>(
+    context: context,
+    builder: (_) {
+      final message = isAuthenticationDisabled
+          ? 'Be sure that now you will have to use this pin to enter the app!'
+          : 'You are changing your pin, so next time when you enter the app you will have to use this new one!';
+
+      return AlertDialog(
+        title: const Text('Do you confirm?'),
+        content: Text(message),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Confirm'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          )
+        ],
+      );
+    },
+  );
+
+  return isConfirmed ?? false;
+}
+
+Future<bool> showPinDeleteConfirmationDialog(BuildContext context) async {
+  final isConfirmed = await showDialog<bool>(
+    context: context,
+    builder: (_) {
+      return AlertDialog(
+        title: const Text('Do you confirm?'),
+        content: const Text(
+            "Be sure that now you won't have this security until you set a pin again!"),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Confirm'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          )
+        ],
+      );
+    },
+  );
+
+  return isConfirmed ?? false;
 }

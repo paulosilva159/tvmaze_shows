@@ -52,7 +52,17 @@ class FavoritesScreen extends StatelessWidget {
                       ),
                       title: Text(show.name),
                       trailing: IconButton(
-                        onPressed: () => presenter.onRemove.add(show.id),
+                        onPressed: () async {
+                          final isConfirmed =
+                              await showUnfavoriteShowConfirmationDialog(
+                            context,
+                            showName: show.name,
+                          );
+
+                          if (isConfirmed) {
+                            presenter.onRemove.add(show.id);
+                          }
+                        },
                         icon: const Icon(Icons.delete),
                       ),
                     );
@@ -65,4 +75,30 @@ class FavoritesScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<bool> showUnfavoriteShowConfirmationDialog(BuildContext context,
+    {String? showName}) async {
+  final isConfirmed = await showDialog<bool>(
+    context: context,
+    builder: (_) {
+      return AlertDialog(
+        title: const Text('Do you confirm?'),
+        content:
+            Text("You may favorite ${showName ?? 'this'} in the future again!"),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Confirm'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          )
+        ],
+      );
+    },
+  );
+
+  return isConfirmed ?? false;
 }
