@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/data/models/poster.dart';
+import 'package:jobsity_challenge/presentation/widgets/async_snapshot_response_view.dart';
 
 class PosterImage extends StatelessWidget {
   const PosterImage._({
@@ -46,37 +47,48 @@ class PosterImage extends StatelessWidget {
     final sigma = hasBlur ? 16.0 : 0.0;
     final blurOpacity = hasBlur ? 0.1 : 0.0;
 
+    final placeholder = Placeholder(
+      fallbackHeight: isPortrait ? smallerSide : biggerSide,
+      fallbackWidth: isPortrait ? biggerSide : smallerSide,
+    );
+
     return imageUrl != null
         ? ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: isPortrait ? smallerSide : biggerSide,
               minWidth: isPortrait ? biggerSide : smallerSide,
             ),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: CachedNetworkImageProvider(
-                    imageUrl!,
+            child: CachedNetworkImage(
+              fit: BoxFit.cover,
+              height: isPortrait ? smallerSide : biggerSide,
+              width: isPortrait ? biggerSide : smallerSide,
+              imageUrl: imageUrl!,
+              errorWidget: (_, __, ___) => placeholder,
+              progressIndicatorBuilder: (_, __, ___) =>
+                  const GenericLoadingIndicator(),
+              imageBuilder: (_, provider) {
+                return DecoratedBox(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: provider,
+                    ),
                   ),
-                ),
-              ),
-              child: ClipRect(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(
-                    sigmaX: sigma,
-                    sigmaY: sigma,
+                  child: ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: sigma,
+                        sigmaY: sigma,
+                      ),
+                      child: ColoredBox(
+                        color: Colors.black.withOpacity(blurOpacity),
+                      ),
+                    ),
                   ),
-                  child: ColoredBox(
-                    color: Colors.black.withOpacity(blurOpacity),
-                  ),
-                ),
-              ),
+                );
+              },
             ),
           )
-        : Placeholder(
-            fallbackHeight: isPortrait ? smallerSide : biggerSide,
-            fallbackWidth: isPortrait ? biggerSide : smallerSide,
-          );
+        : placeholder;
   }
 }

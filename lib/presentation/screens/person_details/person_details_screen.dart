@@ -86,8 +86,15 @@ class PersonDetailsScreen extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 16, vertical: 8),
                                     margin: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 4),
-                                    child: Text(show.name),
+                                        horizontal: 32, vertical: 4),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(show.name),
+                                        const Icon(Icons.chevron_right_rounded)
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
