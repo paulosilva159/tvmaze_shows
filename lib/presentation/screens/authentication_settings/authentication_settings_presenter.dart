@@ -8,6 +8,7 @@ class AuthenticationSettingsPresenter with SubscriptionHolder {
       Stream.value(null).flatMap((_) => _getAuthenticationStatus()),
       _upsertPinSubject.stream.flatMap((value) => _upsertPin(value)),
       _deletePinSubject.stream.flatMap((_) => _deletePin()),
+      _toggleFingerprintSubject.stream.flatMap((_) => _toggleFingerprintUsage())
     ]).listen(_stateSubject.sink.add).addTo(subscriptions);
   }
 
@@ -22,9 +23,18 @@ class AuthenticationSettingsPresenter with SubscriptionHolder {
   final _deletePinSubject = PublishSubject<void>();
   Sink<void> get onDeletePin => _deletePinSubject.sink;
 
+  final _toggleFingerprintSubject = PublishSubject<void>();
+  Sink<void> get onToggleFingerprintUsage => _toggleFingerprintSubject.sink;
+
   Stream<AuthenticationSettingsState> _getAuthenticationStatus() async* {
     if (dataSource.isAuthenticationEnabled) {
-      yield AuthenticationEnabled();
+      final hasFingerprint = await dataSource.hasFingerprintEnabled();
+      final hasPin = dataSource.hasPinEnabled;
+
+      yield AuthenticationEnabled(
+        hasFingerprint: hasFingerprint,
+        hasPin: hasPin,
+      );
     } else {
       yield AuthenticationDisabled();
     }
@@ -42,16 +52,36 @@ class AuthenticationSettingsPresenter with SubscriptionHolder {
     yield AuthenticationDisabled();
   }
 
+  Stream<AuthenticationSettingsState> _toggleFingerprintUsage() async* {
+    await dataSource.toggleFingerprintUsage();
+    final hasFingerprint = await dataSource.hasFingerprintEnabled();
+    final hasPin = dataSource.hasPinEnabled;
+
+    yield AuthenticationEnabled(
+      hasFingerprint: hasFingerprint,
+      hasPin: hasPin,
+    );
+  }
+
   void dispose() {
     _stateSubject.close();
     _deletePinSubject.close();
     _upsertPinSubject.close();
+    _toggleFingerprintSubject.close();
     disposeAll();
   }
 }
 
 abstract class AuthenticationSettingsState {}
 
-class AuthenticationEnabled implements AuthenticationSettingsState {}
+class AuthenticationEnabled implements AuthenticationSettingsState {
+  AuthenticationEnabled({
+    this.hasPin = false,
+    this.hasFingerprint = false,
+  });
+
+  final bool hasPin;
+  final bool hasFingerprint;
+}
 
 class AuthenticationDisabled implements AuthenticationSettingsState {}

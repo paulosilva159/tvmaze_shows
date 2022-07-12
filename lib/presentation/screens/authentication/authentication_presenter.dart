@@ -12,10 +12,10 @@ class AuthenticationPresenter with SubscriptionHolder {
         .listen(_actionSubject.sink.add)
         .addTo(subscriptions);
 
-    Rx.merge([Stream.value(null), _validationSubject.stream])
-        .flatMap((pin) => _checkAuthentication(pin: pin))
-        .listen(_stateSubject.sink.add)
-        .addTo(subscriptions);
+    Rx.merge([
+      Stream.value(null).flatMap((_) => _checkAuthentication()),
+      _validationSubject.stream.flatMap((pin) => _validatePin(pin))
+    ]).listen(_stateSubject.sink.add).addTo(subscriptions);
   }
 
   final UserDataSource dataSource;
@@ -37,24 +37,35 @@ class AuthenticationPresenter with SubscriptionHolder {
     }
   }
 
-  Stream<AuthenticationState> _checkAuthentication({int? pin}) async* {
+  Stream<AuthenticationState> _checkAuthentication() async* {
     final isAuthEnabled = dataSource.isAuthenticationEnabled;
 
     if (isAuthEnabled) {
-      if (pin != null) {
-        final isValid = dataSource.validatePin(pin);
+      final hasFingerprintEnabled = await dataSource.hasFingerprintEnabled();
 
-        if (isValid) {
+      if (hasFingerprintEnabled) {
+        final isAuthenticated = await dataSource.authenticateByFingerprint();
+        if (isAuthenticated) {
           _actionSubject.sink.add(NavigateToHomeAction());
+        } else {
+          yield const RequestAuthentication();
         }
-
-        yield RequestAuthentication(isAuthenticated: isValid);
       } else {
-        yield RequestAuthentication();
+        yield const RequestAuthentication();
       }
     } else {
       yield Idle();
     }
+  }
+
+  Stream<AuthenticationState> _validatePin(int pin) async* {
+    final isValid = dataSource.validatePin(pin);
+
+    if (isValid) {
+      _actionSubject.sink.add(NavigateToHomeAction());
+    }
+
+    yield RequestAuthentication(isAuthenticated: isValid);
   }
 
   void dispose() {
@@ -74,7 +85,11 @@ abstract class AuthenticationState {}
 class Idle implements AuthenticationState {}
 
 class RequestAuthentication implements AuthenticationState {
-  RequestAuthentication({this.isAuthenticated});
+  const RequestAuthentication({
+    this.hasFingerprintEnabled = false,
+    this.isAuthenticated,
+  });
 
   final bool? isAuthenticated;
+  final bool hasFingerprintEnabled;
 }

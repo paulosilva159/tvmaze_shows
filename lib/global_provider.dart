@@ -21,6 +21,7 @@ import 'package:jobsity_challenge/presentation/screens/person_details/person_det
 import 'package:jobsity_challenge/presentation/screens/person_details/person_details_presenter.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details_screen.dart';
 import 'package:jobsity_challenge/presentation/screens/show_details/show_details_presenter.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:rxdart/rxdart.dart';
@@ -45,9 +46,10 @@ class _GlobalProviderState extends State<GlobalProvider> {
 
   List<SingleChildWidget> _localProviders(SharedPreferences storage) => [
         Provider<SharedPreferences>(create: (_) => storage),
-        ProxyProvider<SharedPreferences, UserDataSource>(
-            update: (_, storage, __) {
-          return UserDataSourceImpl(storage: storage);
+        Provider<LocalAuthentication>(create: (_) => LocalAuthentication()),
+        ProxyProvider2<SharedPreferences, LocalAuthentication, UserDataSource>(
+            update: (_, storage, auth, __) {
+          return UserDataSourceImpl(storage: storage, auth: auth);
         }),
         ProxyProvider<SharedPreferences, FavoriteDataSource>(
           update: (_, storage, __) {

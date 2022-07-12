@@ -50,13 +50,18 @@ class _AuthenticationSettingsScreenState
               if (data == null) {
                 return const GenericLoadingIndicator();
               } else {
-                final message = data is AuthenticationDisabled
-                    ? 'Create a pin password for the next time you log in!'
-                    : 'Want to update your pin?';
+                final hasPinAuthentication =
+                    data is AuthenticationEnabled && data.hasPin;
+                final hasFingerprintEnabled =
+                    data is AuthenticationEnabled && data.hasFingerprint;
+                final message = hasPinAuthentication
+                    ? 'Want to update your pin?'
+                    : 'Create a pin password for the next time you log in!';
                 final buttonLabel =
-                    data is AuthenticationDisabled ? 'Save pin' : 'Update pin';
+                    hasPinAuthentication ? 'Update pin' : 'Save pin';
 
                 return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (data is AuthenticationDisabled)
                       const Text(
@@ -87,11 +92,34 @@ class _AuthenticationSettingsScreenState
                           )
                         ],
                       ),
+                    const SizedBox(height: 32),
+                    Text(
+                      'Authentication by pin',
+                      style: Theme.of(context).textTheme.headline6,
+                      textAlign: TextAlign.start,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${hasFingerprintEnabled ? 'Disable' : 'Enable'} fingerprint usage',
+                      textAlign: TextAlign.center,
+                    ),
+                    Switch(
+                      value: hasFingerprintEnabled,
+                      onChanged: (_) {
+                        widget.presenter.onToggleFingerprintUsage.add(null);
+                      },
+                    ),
+                    const SizedBox(height: 32),
+                    Text(
+                      'Authentication by pin',
+                      style: Theme.of(context).textTheme.headline6,
+                      textAlign: TextAlign.start,
+                    ),
+                    const SizedBox(height: 32),
                     Text(
                       message,
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 32),
                     Form(
                       key: pinFormKey,
                       child: StatefulBuilder(
@@ -144,8 +172,7 @@ class _AuthenticationSettingsScreenState
                           final isConfirmed =
                               await showPinUpsertConfirmationDialog(
                             context,
-                            isAuthenticationDisabled:
-                                data is AuthenticationDisabled,
+                            isPinAuthenticationEnabled: hasPinAuthentication,
                           );
 
                           if (isConfirmed) {
@@ -159,7 +186,7 @@ class _AuthenticationSettingsScreenState
                       },
                       child: Text(buttonLabel),
                     ),
-                    if (data is AuthenticationEnabled) ...[
+                    if (hasPinAuthentication) ...[
                       const SizedBox(height: 8),
                       TextButton(
                         onPressed: () async {
@@ -188,13 +215,13 @@ class _AuthenticationSettingsScreenState
 }
 
 Future<bool> showPinUpsertConfirmationDialog(BuildContext context,
-    {bool isAuthenticationDisabled = true}) async {
+    {bool isPinAuthenticationEnabled = false}) async {
   final isConfirmed = await showDialog<bool>(
     context: context,
     builder: (_) {
-      final message = isAuthenticationDisabled
-          ? 'Be sure that now you will have to use this pin to enter the app!'
-          : 'You are changing your pin, so next time when you enter the app you will have to use this new one!';
+      final message = isPinAuthenticationEnabled
+          ? 'You are changing your pin, so next time when you enter the app you will have to use this new one!'
+          : 'Be sure that now you will have to use this pin to enter the app!';
 
       return AlertDialog(
         title: const Text('Do you confirm?'),
