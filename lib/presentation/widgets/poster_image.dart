@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:jobsity_challenge/data/models/poster.dart';
-import 'package:jobsity_challenge/presentation/widgets/async_snapshot_response_view.dart';
 
 class PosterImage extends StatelessWidget {
   const PosterImage._({
@@ -64,8 +63,6 @@ class PosterImage extends StatelessWidget {
               width: isPortrait ? biggerSide : smallerSide,
               imageUrl: imageUrl!,
               errorWidget: (_, __, ___) => placeholder,
-              progressIndicatorBuilder: (_, __, ___) =>
-                  const GenericLoadingIndicator(),
               imageBuilder: (_, provider) {
                 return DecoratedBox(
                   decoration: BoxDecoration(
